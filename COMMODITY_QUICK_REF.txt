@@ -1,0 +1,188 @@
+================================================================================
+                     COMMODITY TRADING - QUICK REFERENCE
+================================================================================
+
+TOTAL COMMODITIES: 122 items across 12 categories
+
+PRICE RANGES:
+  Cheapest:  Test Tubes (5 CR), Algae Paste (8 CR)
+  Mid-Range: Most food, medical, materials (20-200 CR)
+  Expensive: Scientific equipment, luxury goods (300-1,000 CR)
+  Premium:   Research materials, AI cores (1,500-3,000 CR)
+  Ultra-Rare: Alien artifacts, antimatter (4,000-5,000 CR)
+
+================================================================================
+CATEGORIES & ITEM COUNTS
+================================================================================
+
+Food & Nutrition (15)    - Basic survival, 8-60 CR, stable prices
+Medical Supplies (15)    - Healthcare, 15-400 CR, moderate volatility
+Scientific Equipment (14)- Research tools, 5-1,200 CR, low volatility
+Life Support (12)        - Critical systems, 35-1,000 CR, stable
+Luxury Goods (13)        - High-value items, 120-1,000 CR, HIGH volatility
+Research Materials (13)  - Rare specimens, 180-5,000 CR, high volatility
+Technology & Electronics (10) - Tech goods, 80-3,000 CR, moderate volatility
+Energy Products (6)      - Fuel/power, 60-5,000 CR, price spikes
+Textiles & Materials (6) - Fabrics, 25-200 CR, stable
+Entertainment & Culture (6) - Digital media, 20-100 CR, moderate demand
+Agricultural (6)         - Farming supplies, 35-120 CR, seasonal demand
+Data & Information (6)   - Intelligence, 150-1,000 CR, high volatility
+
+================================================================================
+MARKET MECHANICS
+================================================================================
+
+PRICE FORMULA:
+  Current Price = Base Price × (Demand / Supply) × (1 ± Volatility)
+  Range: 0.5x to 3.0x base price
+
+PLAYER IMPACT:
+  - Buying increases demand → prices rise
+  - Selling increases supply → prices fall
+  - Large transactions (100+ units) = bigger impact
+  - Prices drift back to equilibrium over time
+
+BUY/SELL SPREAD:
+  - Buy from market: 110% of current price
+  - Sell to market: 90% of current price
+  - 20% spread is market profit margin
+
+STOCK LIMITS:
+  - Each commodity has 100-500 units available
+  - Market won't buy if oversupplied
+  - Stock replenishes at 5% per minute
+
+REBALANCING:
+  - Supply/demand drift to 1.0 at 10% per minute
+  - Random fluctuations based on category volatility
+  - Universal needs (food, medical, life support) = stable
+  - Luxury/research = volatile
+
+================================================================================
+PROFITABLE TRADING STRATEGIES
+================================================================================
+
+1. ARBITRAGE (Low Risk, Medium Profit)
+   - Buy commodities where supply is high (low price)
+   - Sell where demand is high (high price)
+   - Best with: Technology, medical supplies
+   - Expected profit: 20-50% per trade
+
+2. SPECULATION (Medium Risk, High Profit)
+   - Buy luxury goods during low demand
+   - Hold until prices rise naturally
+   - Sell at wealthy stations
+   - Best with: Gemstones, artwork, alien artifacts
+   - Expected profit: 50-150% per trade
+
+3. TRADE ROUTES (Medium Risk, High Profit)
+   - Identify price gaps between locations
+   - Establish repeatable buy/sell pattern
+   - Best with: Research materials, energy products
+   - Expected profit: 100-250% per trip
+
+4. BULK TRADING (High Capital, Steady Income)
+   - Buy large quantities of essentials
+   - Sell at remote outposts
+   - Best with: Food, life support, medical
+   - Expected profit: 15-30% but high volume
+
+5. MARKET MANIPULATION (High Risk, Extreme Profit/Loss)
+   - Buy all stock to drive price up
+   - Sell at other markets before price stabilizes
+   - Best with: Low-volume luxury goods
+   - Expected profit: 200%+ or total loss
+
+================================================================================
+TOP 10 MOST PROFITABLE ITEMS (Based on Avg Margins)
+================================================================================
+
+1.  Alien Artifacts       - Base: 5,000 CR | Avg: 155% margin
+2.  Antimatter Cells      - Base: 5,000 CR | Avg: 181% margin
+3.  Dark Matter Traces    - Base: 3,500 CR | Avg: 191% margin
+4.  Gravity Generators    - Base: 3,000 CR | Avg: 255% margin
+5.  AI Cores              - Base: 2,000 CR | Avg: 120% margin
+6.  Gemstones             - Base: 1,000 CR | Avg: 140% margin
+7.  Military Schematics   - Base: 1,000 CR | Avg: 180% margin
+8.  Holographic Art       - Base: 600 CR  | Avg: 110% margin
+9.  Encrypted Data        - Base: 500 CR  | Avg: 150% margin
+10. Exotic Pets           - Base: 450 CR  | Avg: 130% margin
+
+================================================================================
+BEST STARTER COMMODITIES (Low Capital Required)
+================================================================================
+
+1.  Digital Books         - Base: 20 CR  | Low risk, steady demand
+2.  Test Tubes            - Base: 5 CR   | Lab stations always buy
+3.  Coffee Substitute     - Base: 35 CR  | Popular at all locations
+4.  Protein Rations       - Base: 15 CR  | Universal need
+5.  Thermal Blankets      - Base: 25 CR  | Common at outposts
+6.  Board Games           - Base: 40 CR  | Leisure stations premium
+7.  Power Cells           - Base: 80 CR  | Always in demand
+8.  Seed Variety Packs    - Base: 50 CR  | Agricultural colonies pay well
+9.  Fertilizers           - Base: 35 CR  | Farming demand
+10. Bandages              - Base: 15 CR  | Medical essential
+
+================================================================================
+LOCATION-SPECIFIC DEMAND
+================================================================================
+
+RESEARCH STATIONS (High Demand):
+  - Scientific Equipment (all)
+  - Research Materials (premium)
+  - Data & Information
+
+INDUSTRIAL COLONIES (High Demand):
+  - Textiles & Materials
+  - Energy Products
+  - Technology & Electronics
+
+WEALTHY STATIONS (High Demand):
+  - Luxury Goods (premium prices)
+  - Entertainment & Culture
+  - Fine Food items
+
+AGRICULTURAL COLONIES (High Demand):
+  - Agricultural supplies (seasonal spikes)
+  - Fertilizers, seeds, pest control
+
+REMOTE OUTPOSTS (High Demand):
+  - Life Support (premium)
+  - Food & Nutrition
+  - Medical Supplies
+
+MILITARY BASES (High Demand):
+  - Medical supplies
+  - Encrypted Data
+  - Military Schematics
+
+================================================================================
+INTEGRATION NOTES
+================================================================================
+
+FILES:
+  - data.py: COMMODITIES dictionary (122 items)
+  - commodity_market.py: CommodityMarket class
+  - COMMODITY_TRADING_GUIDE.md: Full documentation
+
+USAGE:
+  market = CommodityMarket()
+  market.buy_commodity(location, commodity_id, quantity)
+  market.sell_commodity(location, commodity_id, quantity)
+  market.update_markets(time_delta)  # Call each game tick
+
+SAVE/LOAD:
+  market.to_dict() → save to file
+  CommodityMarket.from_dict(data) → restore
+
+API METHODS:
+  - get_price(location, commodity, is_buying)
+  - get_market_overview(location, category_filter)
+  - get_best_trade_routes()
+  - buy_commodity(location, commodity, quantity)
+  - sell_commodity(location, commodity, quantity)
+  - update_markets(time_delta)
+
+================================================================================
+End of Quick Reference
+================================================================================

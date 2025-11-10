@@ -1,0 +1,139 @@
+================================================================================
+                    VOID DOMINION - PORTABLE USB EDITION
+================================================================================
+
+Welcome, Commander! This is a complete portable installation of Void Dominion,
+a space exploration and trading game.
+
+================================================================================
+                              QUICK START
+================================================================================
+
+WINDOWS USERS:
+--------------
+1. First time setup:
+   - Double-click "install.bat"
+   - Wait for installation to complete
+
+2. Every time you want to play:
+   - Double-click "play.bat"
+
+LINUX/MAC USERS:
+----------------
+1. First time setup:
+   - Open terminal in this folder
+   - Run: chmod +x install.sh && ./install.sh
+
+2. Every time you want to play:
+   - Open terminal in this folder
+   - Run: ./play.sh
+
+================================================================================
+                         DETAILED INSTRUCTIONS
+================================================================================
+
+For complete installation instructions, see:
+- USB_INSTALL_GUIDE.md - Complete USB installation guide
+- INSTALL.md - Standard installation guide
+- QUICKSTART.md - How to play the game
+- README.md - Full game documentation
+
+================================================================================
+                            REQUIREMENTS
+================================================================================
+
+- Python 3.6 or higher
+- 100 MB free space on USB drive
+- Internet connection (for first-time setup only)
+
+================================================================================
+                          YOUR GAME SAVES
+================================================================================
+
+Your game progress is saved in "save_game.yaml" in this folder.
+
+This means:
+✓ Your saves travel with this USB drive
+✓ You can play on different computers
+✓ Your progress is always with you!
+
+================================================================================
+                            TROUBLESHOOTING
+================================================================================
+
+Game won't start?
+- Make sure Python is installed: python --version
+- Run install.bat (Windows) or install.sh (Linux/Mac)
+- See USB_INSTALL_GUIDE.md for detailed help
+
+Python not found?
+- Download from: https://www.python.org/downloads/
+- Windows: Check "Add Python to PATH" during install
+- Linux: Install python3 and python3-tk packages
+
+================================================================================
+                              GAME MODES
+================================================================================
+
+GUI MODE (Recommended):
+- Double-click play.bat (Windows) or run ./play.sh (Linux/Mac)
+- Beautiful graphical interface
+- Point and click controls
+
+CLI MODE (Advanced):
+- Run: python main.py
+- Text-based interface
+- Full keyboard controls
+- Type 'help' for command list
+
+================================================================================
+                            WHAT'S INCLUDED
+================================================================================
+
+Core game files:
+✓ Complete game engine
+✓ All missions and contracts
+✓ Full trading system
+✓ Ship marketplace
+✓ Combat system
+✓ Manufacturing and refining
+✓ Faction system
+✓ Save/load functionality
+
+Documentation:
+✓ USB Installation Guide
+✓ Quick Start Guide
+✓ Full README
+✓ Standard Installation Guide
+
+Launcher scripts:
+✓ Windows: install.bat, play.bat
+✓ Linux/Mac: install.sh, play.sh
+✓ Cross-platform: launch.py
+
+================================================================================
+                          SHARING THE GAME
+================================================================================
+
+Want to share with friends?
+1. Copy this entire folder to their USB drive
+2. Have them run install.bat/install.sh
+3. They'll have their own separate save file!
+
+================================================================================
+                            HAVE FUN!
+================================================================================
+
+You're all set to explore the galaxy!
+
+Launch the game and begin your journey as a space trader, explorer, and
+entrepreneur. Build your fleet, complete missions, trade resources, and
+become the most successful commander in the void!
+
+For help getting started, see QUICKSTART.md
+
+May your cargo hold be full and your shields strong!
+
+                              -- The Development Team
+
+================================================================================
