@@ -4572,15 +4572,437 @@ LOCATIONS = {
         "resources": [],
         "danger_level": 0.55,
         "connections": ["forge_station", "ironhold_world", "crimson_expanse", "pristine_fields"]
+    },
+
+    # ========== NEUTRAL ZONE (Safe Starting Area) ==========
+    "starlight_waystation": {
+        "name": "Starlight Waystation",
+        "type": "station",
+        "description": "Peaceful rest stop offering repairs and supplies to weary travelers",
+        "faction": None,
+        "services": ["market", "repair", "refinery"],
+        "resources": [],
+        "danger_level": 0.05,
+        "connections": ["nexus_prime", "outer_belts", "tranquil_belt"]
+    },
+    "tranquil_belt": {
+        "name": "Tranquil Belt",
+        "type": "asteroid",
+        "description": "Calm asteroid field perfect for novice miners",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_voltium", "raw_titanite"],
+        "danger_level": 0.1,
+        "connections": ["starlight_waystation", "nexus_prime", "harvest_fields"]
+    },
+    "freeport_exchange": {
+        "name": "Freeport Exchange",
+        "type": "station",
+        "description": "Independent trading hub where all factions are welcome",
+        "faction": None,
+        "services": ["market", "contracts", "shipyard"],
+        "resources": [],
+        "danger_level": 0.08,
+        "connections": ["nexus_prime", "titan_alpha", "aurora_reach"]
+    },
+
+    # ========== MERIDIAN COLLECTIVE TERRITORY (Trade & Exploration) ==========
+    "aurora_reach": {
+        "name": "Aurora Reach Station",
+        "type": "station",
+        "description": "Gleaming trade station at the edge of Meridian space, its transparent domes showcase bustling markets beneath auroral skies",
+        "faction": "meridian_collective",
+        "services": ["market", "contracts", "shipyard", "refinery"],
+        "resources": [],
+        "danger_level": 0.15,
+        "connections": ["freeport_exchange", "titan_alpha", "sapphire_fields", "merchant_corridor"]
+    },
+    "sapphire_fields": {
+        "name": "Sapphire Fields",
+        "type": "asteroid",
+        "description": "Beautiful blue-tinted asteroids rich in voltium crystals",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_voltium", "raw_nexium", "raw_neuralfiber"],
+        "danger_level": 0.2,
+        "connections": ["aurora_reach", "harvest_fields", "titan_alpha"]
+    },
+    "merchant_corridor": {
+        "name": "Merchant's Corridor",
+        "type": "space",
+        "description": "Well-patrolled shipping lane where Meridian merchants conduct their lucrative trade routes",
+        "faction": "meridian_collective",
+        "services": [],
+        "resources": [],
+        "danger_level": 0.12,
+        "connections": ["aurora_reach", "prosperity_hub", "meridian_gates"]
+    },
+    "prosperity_hub": {
+        "name": "Prosperity Hub",
+        "type": "station",
+        "description": "Luxurious commercial station featuring high-end shops and exclusive contracts for loyal Meridian traders",
+        "faction": "meridian_collective",
+        "services": ["market", "contracts", "manufacturing", "shipyard"],
+        "resources": [],
+        "danger_level": 0.18,
+        "connections": ["merchant_corridor", "eden_prime", "crystal_gardens"]
+    },
+    "eden_prime": {
+        "name": "Eden Prime",
+        "type": "planet",
+        "description": "Lush garden world serving as the cultural heart of the Meridian Collective, where art and commerce flourish",
+        "faction": "meridian_collective",
+        "services": ["market", "contracts", "refinery"],
+        "resources": [],
+        "danger_level": 0.1,
+        "connections": ["prosperity_hub", "titan_alpha", "verdant_belt"]
+    },
+    "verdant_belt": {
+        "name": "Verdant Belt",
+        "type": "asteroid",
+        "description": "Mineral-rich belt with organic ice formations",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_titanite", "raw_neuralfiber", "raw_voltium"],
+        "danger_level": 0.25,
+        "connections": ["eden_prime", "sapphire_fields"]
+    },
+    "crystal_gardens": {
+        "name": "Crystal Gardens",
+        "type": "asteroid",
+        "description": "Stunning crystalline formations that shimmer in the starlight",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_chronite", "raw_nexium", "raw_quantum_dust"],
+        "anomalies": True,
+        "danger_level": 0.35,
+        "connections": ["prosperity_hub", "explorer_outpost"]
+    },
+    "explorer_outpost": {
+        "name": "Explorer's Outpost",
+        "type": "station",
+        "description": "Remote station dedicated to charting unknown regions, offering generous rewards for exploration contracts",
+        "faction": "meridian_collective",
+        "services": ["contracts", "market", "repair"],
+        "resources": [],
+        "danger_level": 0.3,
+        "connections": ["crystal_gardens", "uncharted_expanse", "meridian_gates"]
+    },
+    "uncharted_expanse": {
+        "name": "Uncharted Expanse",
+        "type": "asteroid",
+        "description": "Mysterious belt at the frontier of Meridian territory",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_nexium", "raw_chronite", "raw_quantum_dust"],
+        "anomalies": True,
+        "danger_level": 0.4,
+        "connections": ["explorer_outpost", "meridian_gates"]
+    },
+    "horizon_vista": {
+        "name": "Horizon Vista",
+        "type": "planet",
+        "description": "Scenic colony world with breathtaking views, popular among Meridian's wealthiest citizens seeking respite from trade politics",
+        "faction": "meridian_collective",
+        "services": ["market", "refinery"],
+        "resources": [],
+        "danger_level": 0.15,
+        "connections": ["eden_prime", "prosperity_hub"]
+    },
+
+    # ========== TECHNOCRAT UNION TERRITORY (Technology & Research) ==========
+    "datacore_prime": {
+        "name": "Datacore Prime",
+        "type": "station",
+        "description": "Massive computing station housing the Union's central AI networks, where algorithmic perfection guides every decision",
+        "faction": "technocrat_union",
+        "services": ["research", "market", "contracts", "manufacturing"],
+        "resources": [],
+        "danger_level": 0.2,
+        "connections": ["neural_network", "synthesis_planet", "binary_belt", "protocol_labs"]
+    },
+    "binary_belt": {
+        "name": "Binary Belt",
+        "type": "asteroid",
+        "description": "Asteroid field optimized by Union algorithms for maximum efficiency",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_titanite", "raw_neuralfiber", "raw_voltium"],
+        "danger_level": 0.25,
+        "connections": ["datacore_prime", "forge_station"]
+    },
+    "protocol_labs": {
+        "name": "Protocol Laboratories",
+        "type": "station",
+        "description": "Sterile research facility where Technocrat scientists push the boundaries of quantum mechanics and neural interfaces",
+        "faction": "technocrat_union",
+        "services": ["research", "market", "manufacturing", "shipyard"],
+        "resources": [],
+        "anomalies": True,
+        "danger_level": 0.28,
+        "connections": ["datacore_prime", "axiom_labs", "quantum_drift"]
+    },
+    "quantum_drift": {
+        "name": "Quantum Drift",
+        "type": "asteroid",
+        "description": "Unstable belt exhibiting quantum fluctuations, perfect for exotic research",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_quantum_dust", "raw_chronite", "raw_synthcrystal"],
+        "anomalies": True,
+        "danger_level": 0.45,
+        "connections": ["protocol_labs", "chronos_expanse", "singularity_reach"]
+    },
+    "singularity_reach": {
+        "name": "Singularity Reach",
+        "type": "station",
+        "description": "Experimental station studying artificial singularities, protected by Union's most advanced defensive systems",
+        "faction": "technocrat_union",
+        "services": ["research", "contracts", "shipyard"],
+        "resources": [],
+        "anomalies": True,
+        "danger_level": 0.5,
+        "connections": ["quantum_drift", "axiom_labs", "void_forge"]
+    },
+    "void_forge": {
+        "name": "Void Forge",
+        "type": "planet",
+        "description": "Dark industrial world where the Union manufactures its most advanced technology, hidden from prying eyes",
+        "faction": "technocrat_union",
+        "services": ["manufacturing", "market", "refinery", "shipyard"],
+        "resources": [],
+        "danger_level": 0.35,
+        "connections": ["singularity_reach", "synthesis_planet", "circuit_fields"]
+    },
+    "circuit_fields": {
+        "name": "Circuit Fields",
+        "type": "asteroid",
+        "description": "Metallic asteroids arranged in perfect geometric patterns by Union drones",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_titanite", "raw_voltium", "raw_neuralfiber"],
+        "danger_level": 0.3,
+        "connections": ["void_forge", "binary_belt"]
+    },
+    "recursion_point": {
+        "name": "Recursion Point",
+        "type": "asteroid",
+        "description": "Bizarre belt where asteroids seem to repeat in fractal patterns",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_synthcrystal", "raw_quantum_dust", "raw_chronite"],
+        "anomalies": True,
+        "danger_level": 0.55,
+        "connections": ["singularity_reach", "quantum_drift"]
+    },
+    "silicon_spire": {
+        "name": "Silicon Spire Station",
+        "type": "station",
+        "description": "Towering vertical station resembling a crystalline needle, serving as the Union's outpost for consciousness upload research",
+        "faction": "technocrat_union",
+        "services": ["research", "market", "contracts"],
+        "resources": [],
+        "danger_level": 0.32,
+        "connections": ["datacore_prime", "neural_network", "algorithm_expanse"]
+    },
+    "algorithm_expanse": {
+        "name": "Algorithm Expanse",
+        "type": "space",
+        "description": "Space sector filled with Union monitoring arrays, tracking every vessel's movement with cold precision",
+        "faction": "technocrat_union",
+        "services": [],
+        "resources": [],
+        "danger_level": 0.4,
+        "connections": ["silicon_spire", "protocol_labs"]
+    },
+    "convergence_nexus": {
+        "name": "Convergence Nexus",
+        "type": "planet",
+        "description": "Entirely mechanized world where organic life has been replaced by perfect machine efficiency under Union control",
+        "faction": "technocrat_union",
+        "services": ["manufacturing", "market", "research", "shipyard"],
+        "resources": [],
+        "danger_level": 0.38,
+        "connections": ["void_forge", "silicon_spire"]
+    },
+
+    # ========== CIPHER DOMINION TERRITORY (Military & Industry) ==========
+    "bastion_prime": {
+        "name": "Bastion Prime",
+        "type": "station",
+        "description": "Imposing military fortress bristling with weapons, serving as the Dominion's forward command center",
+        "faction": "cipher_dominion",
+        "services": ["market", "contracts", "shipyard", "repair"],
+        "resources": [],
+        "danger_level": 0.5,
+        "connections": ["crimson_expanse", "ironhold_world", "warforge_belt", "garrison_outpost"]
+    },
+    "warforge_belt": {
+        "name": "Warforge Belt",
+        "type": "asteroid",
+        "description": "Heavily mined belt supplying the Dominion war machine",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_titanite", "raw_voltium", "raw_nexium"],
+        "danger_level": 0.55,
+        "connections": ["bastion_prime", "ironhold_sectors"]
+    },
+    "garrison_outpost": {
+        "name": "Garrison Outpost",
+        "type": "station",
+        "description": "Stark military installation where Dominion soldiers drill endlessly, preparing for the next conquest",
+        "faction": "cipher_dominion",
+        "services": ["contracts", "market", "shipyard"],
+        "resources": [],
+        "danger_level": 0.58,
+        "connections": ["bastion_prime", "crimson_expanse", "bloodstone_fields"]
+    },
+    "bloodstone_fields": {
+        "name": "Bloodstone Fields",
+        "type": "asteroid",
+        "description": "Red-hued asteroids marking the boundary of Dominion aggression",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_chronite", "raw_nexium", "raw_titanite"],
+        "danger_level": 0.62,
+        "connections": ["garrison_outpost", "conquest_reach"]
+    },
+    "conquest_reach": {
+        "name": "Conquest Reach",
+        "type": "station",
+        "description": "Battle-scarred station serving as the Dominion's staging ground for territorial expansion into contested space",
+        "faction": "cipher_dominion",
+        "services": ["contracts", "manufacturing", "market", "shipyard"],
+        "resources": [],
+        "danger_level": 0.65,
+        "connections": ["bloodstone_fields", "vanguard_citadel", "contested_zone"]
+    },
+    "contested_zone": {
+        "name": "Contested Zone",
+        "type": "space",
+        "description": "Active warzone where Dominion forces clash with resistance fighters",
+        "faction": "cipher_dominion",
+        "services": [],
+        "resources": [],
+        "danger_level": 0.75,
+        "connections": ["conquest_reach", "crimson_expanse"]
+    },
+    "vanguard_citadel": {
+        "name": "Vanguard Citadel",
+        "type": "planet",
+        "description": "Fortress world encased in armor plating, representing the Dominion's military might and ruthless efficiency",
+        "faction": "cipher_dominion",
+        "services": ["manufacturing", "market", "shipyard", "contracts"],
+        "resources": [],
+        "danger_level": 0.6,
+        "connections": ["conquest_reach", "ironhold_world", "sovereign_belt"]
+    },
+    "sovereign_belt": {
+        "name": "Sovereign Belt",
+        "type": "asteroid",
+        "description": "Dominion-controlled mining belt operated by forced labor",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_neuralfiber", "raw_voltium", "raw_titanite"],
+        "danger_level": 0.53,
+        "connections": ["vanguard_citadel", "warforge_belt"]
+    },
+    "dreadnought_yards": {
+        "name": "Dreadnought Yards",
+        "type": "station",
+        "description": "Massive shipyard complex where the Dominion constructs its fearsome capital ships, each vessel a testament to overwhelming force",
+        "faction": "cipher_dominion",
+        "services": ["shipyard", "manufacturing", "market", "contracts"],
+        "resources": [],
+        "danger_level": 0.63,
+        "connections": ["vanguard_citadel", "bastion_prime", "iron_expanse"]
+    },
+    "iron_expanse": {
+        "name": "Iron Expanse",
+        "type": "asteroid",
+        "description": "Vast belt of pure metallic asteroids, jealously guarded by Dominion patrols",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_titanite", "raw_chronite", "raw_nexium"],
+        "danger_level": 0.58,
+        "connections": ["dreadnought_yards", "ironhold_sectors"]
+    },
+    "supremacy_throne": {
+        "name": "Supremacy Throne",
+        "type": "planet",
+        "description": "Capital world of the Cipher Dominion, where absolute loyalty is demanded and dissent is crushed beneath iron rule",
+        "faction": "cipher_dominion",
+        "services": ["market", "contracts", "manufacturing", "shipyard", "refinery"],
+        "resources": [],
+        "danger_level": 0.68,
+        "connections": ["vanguard_citadel", "dreadnought_yards", "bastion_prime"]
+    },
+
+    # ========== VOID CORSAIRS TERRITORY (Pirate Haven - Most Dangerous) ==========
+    "phantom_reach": {
+        "name": "Phantom Reach",
+        "type": "station",
+        "description": "Ghostly station materializing from the void, where Corsair captains trade in stolen goods and forbidden technology",
+        "faction": "void_corsairs",
+        "services": ["black_market", "contracts", "repair"],
+        "resources": [],
+        "danger_level": 0.8,
+        "connections": ["shadow_nebula", "corsair_haven", "reaver_belt"]
+    },
+    "reaver_belt": {
+        "name": "Reaver's Belt",
+        "type": "asteroid",
+        "description": "Treacherous field littered with wreckage from Corsair raids",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_darkwater", "raw_synthcrystal", "raw_quantum_dust"],
+        "anomalies": True,
+        "danger_level": 0.85,
+        "connections": ["phantom_reach", "dead_zone_asteroids", "dread_maw"]
+    },
+    "dread_maw": {
+        "name": "Dread Maw",
+        "type": "station",
+        "description": "Nightmarish station built from salvaged warships, its corridors echo with the tales of the Void's most infamous pirates",
+        "faction": "void_corsairs",
+        "services": ["black_market", "shipyard", "contracts"],
+        "resources": [],
+        "danger_level": 0.88,
+        "connections": ["reaver_belt", "abyss_edge", "corsair_haven"]
+    },
+    "abyss_edge": {
+        "name": "Abyss Edge",
+        "type": "asteroid",
+        "description": "Darkest reaches of known space, where reality itself seems to fray",
+        "faction": None,
+        "services": [],
+        "resources": ["raw_darkwater", "raw_synthcrystal", "raw_chronite"],
+        "anomalies": True,
+        "danger_level": 0.92,
+        "connections": ["dread_maw", "oblivion_gate"]
+    },
+    "oblivion_gate": {
+        "name": "Oblivion Gate",
+        "type": "space",
+        "description": "Mysterious void phenomenon where Corsair warlords reign supreme, far beyond the reach of civilized law",
+        "faction": "void_corsairs",
+        "services": [],
+        "resources": [],
+        "anomalies": True,
+        "danger_level": 0.95,
+        "connections": ["abyss_edge", "dread_maw", "shadow_nebula"]
     }
 }
 
-# ============= FACTIONS (Updated) =============
+# ============= FACTIONS (Updated with Loyalty System) =============
 FACTIONS = {
     "meridian_collective": {
         "name": "Meridian Collective",
         "description": "Democratic alliance of outer colonies focused on trade and exploration",
-        "territory": ["nexus_prime", "meridian_gates", "titan_alpha"],
+        "territory": [
+            "nexus_prime", "meridian_gates", "titan_alpha", "aurora_reach", "prosperity_hub",
+            "eden_prime", "explorer_outpost", "horizon_vista", "merchant_corridor"
+        ],
         "standing": "neutral",
         "relations": {"cipher_dominion": -0.3, "void_corsairs": -0.5, "technocrat_union": 0.4},
         "bonuses": {"trade": 0.15, "exploration": 0.10}
@@ -4588,7 +5010,10 @@ FACTIONS = {
     "cipher_dominion": {
         "name": "Cipher Dominion",
         "description": "Militaristic empire seeking territorial expansion through force",
-        "territory": ["crimson_expanse", "ironhold_sectors", "ironhold_world"],
+        "territory": [
+            "crimson_expanse", "ironhold_sectors", "ironhold_world", "bastion_prime", "garrison_outpost",
+            "conquest_reach", "vanguard_citadel", "dreadnought_yards", "supremacy_throne", "contested_zone"
+        ],
         "standing": "hostile",
         "relations": {"meridian_collective": -0.3, "void_corsairs": 0.2, "technocrat_union": -0.6},
         "bonuses": {"combat": 0.20, "territory_control": 0.15}
@@ -4596,7 +5021,10 @@ FACTIONS = {
     "technocrat_union": {
         "name": "Technocrat Union",
         "description": "Scientific cabal pursuing technological supremacy and innovation",
-        "territory": ["axiom_labs", "synthesis_planet", "neural_network", "forge_station"],
+        "territory": [
+            "axiom_labs", "synthesis_planet", "neural_network", "forge_station", "datacore_prime",
+            "protocol_labs", "singularity_reach", "void_forge", "silicon_spire", "convergence_nexus"
+        ],
         "standing": "friendly",
         "relations": {"meridian_collective": 0.4, "cipher_dominion": -0.6, "void_corsairs": -0.2},
         "bonuses": {"research": 0.25, "manufacturing": 0.15, "refining": 0.10}
@@ -4604,11 +5032,27 @@ FACTIONS = {
     "void_corsairs": {
         "name": "Void Corsairs",
         "description": "Pirate syndicate and outlaws operating from hidden bases",
-        "territory": ["shadow_nebula", "corsair_haven", "blackmarket_dock"],
+        "territory": [
+            "shadow_nebula", "corsair_haven", "blackmarket_dock", "phantom_reach", "dread_maw", "oblivion_gate"
+        ],
         "standing": "hostile",
         "relations": {"meridian_collective": -0.5, "cipher_dominion": 0.2, "technocrat_union": -0.2},
         "bonuses": {"stealth": 0.20, "black_market": 0.30}
     }
+}
+
+# ============= FACTION LOYALTY SYSTEM =============
+# Loyalty ranges: -100 to 100
+# Completing faction contracts increases loyalty
+# Attacking faction members decreases loyalty
+FACTION_LOYALTY_TIERS = {
+    "reviled": {"min": -100, "max": -50, "loot_multiplier": 0.0, "contract_multiplier": 0.5, "description": "Kill on sight"},
+    "hostile": {"min": -49, "max": -10, "loot_multiplier": 0.0, "contract_multiplier": 0.7, "description": "Unwelcome"},
+    "neutral": {"min": -9, "max": 9, "loot_multiplier": 0.5, "contract_multiplier": 1.0, "description": "Unknown"},
+    "friendly": {"min": 10, "max": 29, "loot_multiplier": 0.7, "contract_multiplier": 1.2, "description": "Accepted"},
+    "honored": {"min": 30, "max": 59, "loot_multiplier": 0.9, "contract_multiplier": 1.5, "description": "Respected"},
+    "revered": {"min": 60, "max": 89, "loot_multiplier": 1.2, "contract_multiplier": 2.0, "description": "Esteemed ally"},
+    "exalted": {"min": 90, "max": 100, "loot_multiplier": 1.5, "contract_multiplier": 2.5, "description": "Legendary hero"}
 }
 
 # ============= CONTRACT TYPES (Updated) =============
