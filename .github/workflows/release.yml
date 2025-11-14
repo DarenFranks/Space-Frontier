@@ -1,0 +1,80 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v2.0.0, v2.1.0, etc.
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+    
+    - name: Create release package
+      run: |
+        mkdir -p Space-Frontier-v${{ steps.get_version.outputs.VERSION }}
+        
+        # Copy all Python files
+        cp *.py Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        
+        # Copy documentation
+        cp *.md Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        cp *.txt Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        
+        # Copy launch scripts
+        cp *.bat Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        cp *.sh Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        
+        # Copy requirements
+        cp requirements.txt Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/
+        
+        # Create README for the release
+        echo "# Space Frontier v${{ steps.get_version.outputs.VERSION }}" > Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "To run the game:" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "1. Install Python 3.7+" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "2. Run: pip install -r requirements.txt" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "3. Run: python gui.py" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "" >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        echo "See README.md for full documentation." >> Space-Frontier-v${{ steps.get_version.outputs.VERSION }}/RELEASE_NOTES.txt
+        
+        # Create zip file
+        zip -r Space-Frontier-v${{ steps.get_version.outputs.VERSION }}.zip Space-Frontier-v${{ steps.get_version.outputs.VERSION }}
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: Space-Frontier-v${{ steps.get_version.outputs.VERSION }}.zip
+        name: Space Frontier ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Space Frontier v${{ steps.get_version.outputs.VERSION }}
+          
+          ### Installation
+          1. Download the zip file below
+          2. Extract to your desired location
+          3. Install Python 3.7+ if not already installed
+          4. Run: `pip install -r requirements.txt`
+          5. Launch: `python gui.py`
+          
+          ### What's New
+          See [README.md](https://github.com/DarenFranks/Space-Frontier/blob/main/README.md) for complete feature list.
+          
+          ### System Requirements
+          - Python 3.7 or higher
+          - ~50 MB disk space
+          - 1400x900 minimum screen resolution
+          
+          ---
+          
+          **Download the zip file below to get started!**
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
