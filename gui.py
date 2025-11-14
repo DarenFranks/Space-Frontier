@@ -5179,9 +5179,6 @@ class VoidDominionGUI:
         map_content_frame = tk.Frame(map_panel_frame, bg=COLORS['bg_dark'])
         map_content_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         
-        # Insert the universe map
-        self.create_universe_map(map_content_frame)
-        
         # RIGHT COLUMN: Travel Progress Info
         right_frame = tk.Frame(main_container, bg=COLORS['bg_dark'])
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(10, 0))
@@ -5189,6 +5186,9 @@ class VoidDominionGUI:
         # Configure right frame width
         right_frame.config(width=400)
         right_frame.pack_propagate(False)
+        
+        # Force display update before creating heavy map
+        overlay.update()
         
         # Title
         tk.Label(
@@ -5419,7 +5419,16 @@ class VoidDominionGUI:
             else:
                 messagebox.showerror("Travel Error", message)
         
-        # Start animation
+        # Load the universe map asynchronously after window displays
+        # This prevents blocking and ensures immediate display
+        def load_map():
+            self.create_universe_map(map_content_frame)
+            overlay.update()
+        
+        # Start map loading after a brief delay
+        overlay.after(50, load_map)
+        
+        # Start animation immediately
         overlay.after(100, update_animation)
 
     def scan_area(self):
