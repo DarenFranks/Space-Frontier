@@ -1281,7 +1281,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -1354,7 +1354,7 @@ class VoidDominionGUI:
 
         map_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, map_frame.winfo_reqwidth(), map_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=map_frame, anchor="nw")
@@ -1631,7 +1631,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -1904,7 +1904,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -2087,7 +2087,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -2324,7 +2324,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -2665,7 +2665,7 @@ class VoidDominionGUI:
 
             installed_scrollable.bind(
                 "<Configure>",
-                lambda e: installed_canvas.configure(scrollregion=installed_canvas.bbox("all"))
+                lambda e: installed_canvas.configure(scrollregion=(0, 0, installed_canvas.winfo_width(), installed_scrollable.winfo_reqheight()))
             )
 
             installed_canvas.create_window((0, 0), window=installed_scrollable, anchor="nw")
@@ -2755,7 +2755,7 @@ class VoidDominionGUI:
 
             available_scrollable.bind(
                 "<Configure>",
-                lambda e: available_canvas.configure(scrollregion=available_canvas.bbox("all"))
+                lambda e: available_canvas.configure(scrollregion=(0, 0, available_canvas.winfo_width(), available_scrollable.winfo_reqheight()))
             )
 
             available_canvas.create_window((0, 0), window=available_scrollable, anchor="nw")
@@ -2863,7 +2863,7 @@ class VoidDominionGUI:
 
             station_scrollable.bind(
                 "<Configure>",
-                lambda e: station_canvas.configure(scrollregion=station_canvas.bbox("all"))
+                lambda e: station_canvas.configure(scrollregion=(0, 0, station_canvas.winfo_width(), station_scrollable.winfo_reqheight()))
             )
 
             station_canvas.create_window((0, 0), window=station_scrollable, anchor="nw")
@@ -2998,7 +2998,7 @@ class VoidDominionGUI:
 
                     scrollable_frame.bind(
                         "<Configure>",
-                        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+                        lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
                     )
 
                     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -3219,7 +3219,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -3398,7 +3398,7 @@ class VoidDominionGUI:
 
         scrollable_frame1.bind(
             "<Configure>",
-            lambda e: canvas1.configure(scrollregion=canvas1.bbox("all"))
+            lambda e: canvas1.configure(scrollregion=(0, 0, canvas1.winfo_width(), scrollable_frame1.winfo_reqheight()))
         )
 
         canvas1.create_window((0, 0), window=scrollable_frame1, anchor="nw")
@@ -3452,7 +3452,7 @@ class VoidDominionGUI:
 
             scrollable_frame2.bind(
                 "<Configure>",
-                lambda e: canvas2.configure(scrollregion=canvas2.bbox("all"))
+                lambda e: canvas2.configure(scrollregion=(0, 0, canvas2.winfo_width(), scrollable_frame2.winfo_reqheight()))
             )
 
             canvas2.create_window((0, 0), window=scrollable_frame2, anchor="nw")
@@ -3715,7 +3715,7 @@ class VoidDominionGUI:
 
             scrollable_frame.bind(
                 "<Configure>",
-                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+                lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
             )
 
             canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -3905,7 +3905,7 @@ class VoidDominionGUI:
 
         scrollable_frame1.bind(
             "<Configure>",
-            lambda e: canvas1.configure(scrollregion=canvas1.bbox("all"))
+            lambda e: canvas1.configure(scrollregion=(0, 0, canvas1.winfo_width(), scrollable_frame1.winfo_reqheight()))
         )
 
         canvas1.create_window((0, 0), window=scrollable_frame1, anchor="nw")
@@ -3971,7 +3971,7 @@ class VoidDominionGUI:
 
             scrollable_frame2.bind(
                 "<Configure>",
-                lambda e: canvas2.configure(scrollregion=canvas2.bbox("all"))
+                lambda e: canvas2.configure(scrollregion=(0, 0, canvas2.winfo_width(), scrollable_frame2.winfo_reqheight()))
             )
 
             canvas2.create_window((0, 0), window=scrollable_frame2, anchor="nw")
@@ -4118,7 +4118,7 @@ class VoidDominionGUI:
 
             scrollable_frame.bind(
                 "<Configure>",
-                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+                lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
             )
 
             canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -4301,7 +4301,7 @@ class VoidDominionGUI:
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
         )
 
         canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
@@ -4685,7 +4685,7 @@ class VoidDominionGUI:
 
             scrollable_frame1.bind(
                 "<Configure>",
-                lambda e: canvas1.configure(scrollregion=canvas1.bbox("all"))
+                lambda e: canvas1.configure(scrollregion=(0, 0, canvas1.winfo_width(), scrollable_frame1.winfo_reqheight()))
             )
 
             canvas1.create_window((0, 0), window=scrollable_frame1, anchor="nw")
@@ -4751,7 +4751,7 @@ class VoidDominionGUI:
 
             scrollable_frame2.bind(
                 "<Configure>",
-                lambda e: canvas2.configure(scrollregion=canvas2.bbox("all"))
+                lambda e: canvas2.configure(scrollregion=(0, 0, canvas2.winfo_width(), scrollable_frame2.winfo_reqheight()))
             )
 
             canvas2.create_window((0, 0), window=scrollable_frame2, anchor="nw")
@@ -4848,7 +4848,7 @@ class VoidDominionGUI:
 
             scrollable_frame.bind(
                 "<Configure>",
-                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+                lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
             )
 
             canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
