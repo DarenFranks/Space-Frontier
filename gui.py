@@ -2235,7 +2235,7 @@ class VoidDominionGUI:
                 ).pack(anchor='w', padx=30)
 
     def show_shipyard_view(self):
-        """Show shipyard - ship construction blueprints"""
+        """Show shipyard - ship construction blueprints - REORGANIZED WITH REPAIR FIRST"""
         self.clear_content()
 
         location_data = LOCATIONS[self.engine.player.location]
@@ -2272,148 +2272,7 @@ class VoidDominionGUI:
         # Check if shipyard is available at this location
         has_shipyard = "shipyard" in location_data.get("services", [])
 
-        # Berth status panel (if shipyard available)
-        if has_shipyard:
-            berth_panel, berth_content = self.create_panel(scrollable_frame, "🏠 Shipyard Berths & Fleet Management")
-            berth_panel.pack(fill=tk.X, pady=(0, 10))
-
-            berth_overview = self.engine.berth_manager.get_berth_overview(self.engine.player.location)
-
-            # Header with berth stats
-            header_frame = tk.Frame(berth_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-            header_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
-
-            berth_status_text = f"Berths at this location: {berth_overview['used']}/{berth_overview['total']} occupied"
-            if berth_overview['total'] < berth_overview['max_berths']:
-                berth_status_text += f" | Can purchase up to {berth_overview['max_berths']} total"
-
-            tk.Label(
-                header_frame,
-                text=berth_status_text,
-                font=('Arial', 10, 'bold'),
-                fg=COLORS['accent'],
-                bg=COLORS['bg_light']
-            ).pack(pady=8)
-
-            # Get current ship ID
-            current_ship_id = self.engine.vessel.vessel_class_id
-
-            # Show all berths (including empty ones)
-            all_berths = berth_overview['berths']  # List of ship_ids or None
-
-            if all_berths:
-                # Display each berth
-                for berth_idx, ship_id in enumerate(all_berths):
-                    berth_num = berth_idx + 1
-                    is_current_ship = (ship_id == current_ship_id)
-
-                    # Create berth card
-                    berth_frame = tk.Frame(berth_content, bg=COLORS['bg_medium'])
-                    berth_frame.pack(fill=tk.X, padx=10, pady=5)
-
-                    # Berth header
-                    berth_header_bg = COLORS['success'] if is_current_ship else COLORS['bg_light']
-                    berth_header = tk.Frame(berth_frame, bg=berth_header_bg, relief=tk.RIDGE, bd=2)
-                    berth_header.pack(fill=tk.X)
-
-                    header_text = f"🏠 BERTH #{berth_num}"
-                    if is_current_ship:
-                        header_text += " ⭐ (CURRENTLY PILOTING)"
-                    elif ship_id is None:
-                        header_text += " - EMPTY"
-
-                    tk.Label(
-                        berth_header,
-                        text=header_text,
-                        font=('Arial', 10, 'bold'),
-                        fg=COLORS['text'] if is_current_ship else COLORS['accent'],
-                        bg=berth_header_bg
-                    ).pack(anchor='w', padx=10, pady=8)
-
-                    # Berth content
-                    if ship_id and ship_id in VESSEL_CLASSES:
-                        ship_data = VESSEL_CLASSES[ship_id]
-
-                        ship_card = tk.Frame(berth_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                        ship_card.pack(fill=tk.X, padx=2, pady=2)
-
-                        # Left side - ship info
-                        left_frame = tk.Frame(ship_card, bg=COLORS['bg_light'])
-                        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
-
-                        # Ship name
-                        tk.Label(
-                            left_frame,
-                            text=ship_data['name'],
-                            font=('Arial', 11, 'bold'),
-                            fg=COLORS['accent'],
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w')
-
-                        # Ship class and tier
-                        tk.Label(
-                            left_frame,
-                            text=f"{ship_data['class_type'].title()} | Tier {ship_data['tier_num']} | Level {ship_data['level_requirement']}+",
-                            font=('Arial', 9),
-                            fg=COLORS['text_dim'],
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w', pady=(2, 5))
-
-                        # Stats in compact format
-                        stats_text = f"Hull: {ship_data['hull_hp']:,} | Shield: {ship_data['shield_capacity']:,} | Speed: {ship_data['base_speed']} | Cargo: {ship_data['cargo_capacity']:,}"
-                        tk.Label(
-                            left_frame,
-                            text=stats_text,
-                            font=('Arial', 9),
-                            fg=COLORS['text'],
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w')
-
-                        # Module slots
-                        slots = ship_data['module_slots']
-                        slots_text = f"Slots: W:{slots['weapon']} D:{slots['defense']} U:{slots['utility']} E:{slots['engine']}"
-                        tk.Label(
-                            left_frame,
-                            text=slots_text,
-                            font=('Arial', 9),
-                            fg=COLORS['text_dim'],
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w', pady=(2, 0))
-
-                        # Right side - actions
-                        right_frame = tk.Frame(ship_card, bg=COLORS['bg_light'])
-                        right_frame.pack(side=tk.RIGHT, padx=10, pady=10)
-
-                        if not is_current_ship:
-                            self.create_button(
-                                right_frame,
-                                "Pilot Ship",
-                                lambda s=ship_id: self.switch_ship_action(s),
-                                width=12,
-                                style='info'
-                            ).pack()
-                    else:
-                        # Empty berth
-                        empty_frame = tk.Frame(berth_frame, bg=COLORS['bg_dark'], relief=tk.SUNKEN, bd=1)
-                        empty_frame.pack(fill=tk.X, padx=2, pady=2)
-
-                        tk.Label(
-                            empty_frame,
-                            text="[ Empty Berth - Available for Ship Storage ]",
-                            font=('Arial', 10, 'italic'),
-                            fg=COLORS['text_dim'],
-                            bg=COLORS['bg_dark']
-                        ).pack(pady=30)
-            else:
-                tk.Label(
-                    berth_content,
-                    text="No berths owned at this location. Purchase berths below to store ships.",
-                    font=('Arial', 10),
-                    fg=COLORS['text_dim'],
-                    bg=COLORS['bg_medium']
-                ).pack(pady=20)
-
-        # Repair panel (if shipyard available)
+        # ===== 🔧 REPAIR PANEL - ALWAYS SHOWN FIRST (TOP PRIORITY) =====
         if has_shipyard:
             repair_panel, repair_content = self.create_panel(scrollable_frame, "🔧 Vessel Repair & Maintenance")
             repair_panel.pack(fill=tk.X, pady=(0, 10))
@@ -2534,754 +2393,966 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(pady=10)
 
-        # Module Management panel (if shipyard available)
-        if has_shipyard:
-            modules_panel, modules_content = self.create_panel(scrollable_frame, "⚙️ Module Management - Configure Your Ship")
-            modules_panel.pack(fill=tk.X, pady=(0, 10))
-
-            # Current ship info header
-            ship_info_frame = tk.Frame(modules_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
-            ship_info_frame.pack(fill=tk.X, padx=10, pady=5)
-
-            tk.Label(
-                ship_info_frame,
-                text=f"Configuring: {self.engine.vessel.name}",
+        # ===== EXPANDABLE SECTIONS - BEHIND BUTTONS =====
+        # Create expand/collapse function generator
+        def create_toggle_section(parent, title, build_content_func):
+            """Creates an expandable section with a toggle button"""
+            # Container for the whole section
+            section_container = tk.Frame(parent, bg=COLORS['bg_dark'])
+            section_container.pack(fill=tk.X, pady=(0, 10))
+            
+            # State tracker
+            is_expanded = [False]
+            content_frame_holder = [None]  # To store the content frame
+            
+            # Header button
+            header_frame = tk.Frame(section_container, bg=COLORS['bg_medium'], relief=tk.RIDGE, bd=2)
+            header_frame.pack(fill=tk.X)
+            
+            def toggle():
+                is_expanded[0] = not is_expanded[0]
+                if is_expanded[0]:
+                    # Show content
+                    arrow_label.config(text="▼")
+                    if content_frame_holder[0] is None:
+                        content_frame_holder[0] = tk.Frame(section_container, bg=COLORS['bg_dark'])
+                        content_frame_holder[0].pack(fill=tk.BOTH, expand=True)
+                        build_content_func(content_frame_holder[0])
+                    else:
+                        content_frame_holder[0].pack(fill=tk.BOTH, expand=True)
+                else:
+                    # Hide content
+                    arrow_label.config(text="▶")
+                    if content_frame_holder[0]:
+                        content_frame_holder[0].pack_forget()
+            
+            # Header content
+            header_content = tk.Frame(header_frame, bg=COLORS['bg_medium'])
+            header_content.pack(fill=tk.X, pady=10, padx=10)
+            
+            arrow_label = tk.Label(
+                header_content,
+                text="▶",
                 font=('Arial', 12, 'bold'),
                 fg=COLORS['accent'],
-                bg=COLORS['bg_light']
-            ).pack(pady=5)
-
-            # Module slot summary
-            vessel = self.engine.vessel
-            slots_text = f"Weapon: {len(vessel.installed_modules['weapon'])}/{vessel.module_slots['weapon']} | " \
-                        f"Defense: {len(vessel.installed_modules['defense'])}/{vessel.module_slots['defense']} | " \
-                        f"Utility: {len(vessel.installed_modules['utility'])}/{vessel.module_slots['utility']} | " \
-                        f"Engine: {len(vessel.installed_modules['engine'])}/{vessel.module_slots['engine']}"
-            tk.Label(
-                ship_info_frame,
-                text=slots_text,
-                font=('Arial', 9),
-                fg=COLORS['text_dim'],
-                bg=COLORS['bg_light']
-            ).pack(pady=5)
-
-            # Two-column layout: Installed modules | Available modules
-            columns_frame = tk.Frame(modules_content, bg=COLORS['bg_medium'])
-            columns_frame.pack(fill=tk.X, padx=10, pady=5)
-
-            # Left column: Installed modules
-            installed_frame = tk.Frame(columns_frame, bg=COLORS['bg_medium'])
-            installed_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
-
-            tk.Label(
-                installed_frame,
-                text="📦 Installed Modules",
-                font=('Arial', 11, 'bold'),
+                bg=COLORS['bg_medium']
+            )
+            arrow_label.pack(side=tk.LEFT, padx=(0, 10))
+            
+            title_label = tk.Label(
+                header_content,
+                text=title,
+                font=('Arial', 12, 'bold'),
                 fg=COLORS['accent'],
                 bg=COLORS['bg_medium']
-            ).pack(pady=5)
-
-            # Scrollable installed modules list
-            installed_canvas = tk.Canvas(installed_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=250)
-            installed_scrollbar = tk.Scrollbar(installed_frame, orient="vertical", command=installed_canvas.yview)
-            installed_scrollable = tk.Frame(installed_canvas, bg=COLORS['bg_medium'])
-
-            installed_scrollable.bind(
-                "<Configure>",
-                lambda e: installed_canvas.configure(scrollregion=(0, 0, installed_canvas.winfo_width(), installed_scrollable.winfo_reqheight()))
             )
+            title_label.pack(side=tk.LEFT)
+            
+            # Make the whole header clickable
+            for widget in [header_frame, header_content, arrow_label, title_label]:
+                widget.bind('<Button-1>', lambda e: toggle())
+                widget.config(cursor='hand2')
+            
+            return section_container
 
-            installed_canvas.create_window((0, 0), window=installed_scrollable, anchor="nw")
-            installed_canvas.configure(yscrollcommand=installed_scrollbar.set)
-            self.bind_mousewheel(installed_canvas, installed_scrollable)
+        # ===== 🏠 BERTH MANAGEMENT - EXPANDABLE =====
+        if has_shipyard:
+            def build_berth_content(parent_frame):
+                berth_content = parent_frame
+                
+                berth_overview = self.engine.berth_manager.get_berth_overview(self.engine.player.location)
 
-            # Display installed modules by type
-            has_modules = False
-            for module_type in ['weapon', 'defense', 'utility', 'engine']:
-                installed = vessel.installed_modules[module_type]
-                if installed:
-                    has_modules = True
-                    type_header = tk.Label(
-                        installed_scrollable,
-                        text=f"▸ {module_type.title()}",
-                        font=('Arial', 10, 'bold'),
-                        fg=COLORS['text_accent'],
-                        bg=COLORS['bg_medium']
-                    )
-                    type_header.pack(anchor='w', padx=5, pady=(5, 2))
+                # Header with berth stats
+                header_frame = tk.Frame(berth_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                header_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
 
-                    for module_id in installed:
-                        if module_id in MODULES:
-                            module_data = MODULES[module_id]
+                berth_status_text = f"Berths at this location: {berth_overview['used']}/{berth_overview['total']} occupied"
+                if berth_overview['total'] < berth_overview['max_berths']:
+                    berth_status_text += f" | Can purchase up to {berth_overview['max_berths']} total"
 
-                            module_frame = tk.Frame(installed_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                            module_frame.pack(fill=tk.X, padx=5, pady=2)
+                tk.Label(
+                    header_frame,
+                    text=berth_status_text,
+                    font=('Arial', 10, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_light']
+                ).pack(pady=8)
 
-                            info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
-                            info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
+                # Get current ship ID
+                current_ship_id = self.engine.vessel.vessel_class_id
 
+                # Show all berths (including empty ones)
+                all_berths = berth_overview['berths']  # List of ship_ids or None
+
+                if all_berths:
+                    # Display each berth
+                    for berth_idx, ship_id in enumerate(all_berths):
+                        berth_num = berth_idx + 1
+                        is_current_ship = (ship_id == current_ship_id)
+
+                        # Create berth card
+                        berth_frame = tk.Frame(berth_content, bg=COLORS['bg_medium'])
+                        berth_frame.pack(fill=tk.X, padx=10, pady=5)
+
+                        # Berth header
+                        berth_header_bg = COLORS['success'] if is_current_ship else COLORS['bg_light']
+                        berth_header = tk.Frame(berth_frame, bg=berth_header_bg, relief=tk.RIDGE, bd=2)
+                        berth_header.pack(fill=tk.X)
+
+                        header_text = f"🏠 BERTH #{berth_num}"
+                        if is_current_ship:
+                            header_text += " ⭐ (CURRENTLY PILOTING)"
+                        elif ship_id is None:
+                            header_text += " - EMPTY"
+
+                        tk.Label(
+                            berth_header,
+                            text=header_text,
+                            font=('Arial', 10, 'bold'),
+                            fg=COLORS['text'] if is_current_ship else COLORS['accent'],
+                            bg=berth_header_bg
+                        ).pack(anchor='w', padx=10, pady=8)
+
+                        # Berth content
+                        if ship_id and ship_id in VESSEL_CLASSES:
+                            ship_data = VESSEL_CLASSES[ship_id]
+
+                            ship_card = tk.Frame(berth_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                            ship_card.pack(fill=tk.X, padx=2, pady=2)
+
+                            # Left side - ship info
+                            left_frame = tk.Frame(ship_card, bg=COLORS['bg_light'])
+                            left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+                            # Ship name
                             tk.Label(
-                                info_frame,
-                                text=module_data['name'],
-                                font=('Arial', 9, 'bold'),
+                                left_frame,
+                                text=ship_data['name'],
+                                font=('Arial', 11, 'bold'),
+                                fg=COLORS['accent'],
+                                bg=COLORS['bg_light']
+                            ).pack(anchor='w')
+
+                            # Ship class and tier
+                            tk.Label(
+                                left_frame,
+                                text=f"{ship_data['class_type'].title()} | Tier {ship_data['tier_num']} | Level {ship_data['level_requirement']}+",
+                                font=('Arial', 9),
+                                fg=COLORS['text_dim'],
+                                bg=COLORS['bg_light']
+                            ).pack(anchor='w', pady=(2, 5))
+
+                            # Stats in compact format
+                            stats_text = f"Hull: {ship_data['hull_hp']:,} | Shield: {ship_data['shield_capacity']:,} | Speed: {ship_data['base_speed']} | Cargo: {ship_data['cargo_capacity']:,}"
+                            tk.Label(
+                                left_frame,
+                                text=stats_text,
+                                font=('Arial', 9),
                                 fg=COLORS['text'],
                                 bg=COLORS['bg_light']
                             ).pack(anchor='w')
 
-                            # Show module specs using helper function
-                            specs_text = format_module_specs(module_data)
+                            # Module slots
+                            slots = ship_data['module_slots']
+                            slots_text = f"Slots: W:{slots['weapon']} D:{slots['defense']} U:{slots['utility']} E:{slots['engine']}"
+                            tk.Label(
+                                left_frame,
+                                text=slots_text,
+                                font=('Arial', 9),
+                                fg=COLORS['text_dim'],
+                                bg=COLORS['bg_light']
+                            ).pack(anchor='w', pady=(2, 0))
+
+                            # Right side - actions
+                            right_frame = tk.Frame(ship_card, bg=COLORS['bg_light'])
+                            right_frame.pack(side=tk.RIGHT, padx=10, pady=10)
+
+                            if not is_current_ship:
+                                self.create_button(
+                                    right_frame,
+                                    "Pilot Ship",
+                                    lambda s=ship_id: self.switch_ship_action(s),
+                                    width=12,
+                                    style='info'
+                                ).pack()
+                        else:
+                            # Empty berth
+                            empty_frame = tk.Frame(berth_frame, bg=COLORS['bg_dark'], relief=tk.SUNKEN, bd=1)
+                            empty_frame.pack(fill=tk.X, padx=2, pady=2)
+
+                            tk.Label(
+                                empty_frame,
+                                text="[ Empty Berth - Available for Ship Storage ]",
+                                font=('Arial', 10, 'italic'),
+                                fg=COLORS['text_dim'],
+                                bg=COLORS['bg_dark']
+                            ).pack(pady=30)
+                else:
+                    tk.Label(
+                        berth_content,
+                        text="No berths owned at this location. Purchase berths below to store ships.",
+                        font=('Arial', 10),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_medium']
+                    ).pack(pady=20)
+
+            create_toggle_section(scrollable_frame, "🏠 Berth Management & Fleet", build_berth_content)
+
+        # ===== ⚙️ MODULE MANAGEMENT - EXPANDABLE =====
+        if has_shipyard:
+            def build_modules_content(parent_frame):
+                modules_content = parent_frame
+                
+                # Current ship info header
+                ship_info_frame = tk.Frame(modules_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
+                ship_info_frame.pack(fill=tk.X, padx=10, pady=5)
+
+                tk.Label(
+                    ship_info_frame,
+                    text=f"Configuring: {self.engine.vessel.name}",
+                    font=('Arial', 12, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_light']
+                ).pack(pady=5)
+
+                # Module slot summary
+                vessel = self.engine.vessel
+                slots_text = f"Weapon: {len(vessel.installed_modules['weapon'])}/{vessel.module_slots['weapon']} | " \
+                            f"Defense: {len(vessel.installed_modules['defense'])}/{vessel.module_slots['defense']} | " \
+                            f"Utility: {len(vessel.installed_modules['utility'])}/{vessel.module_slots['utility']} | " \
+                            f"Engine: {len(vessel.installed_modules['engine'])}/{vessel.module_slots['engine']}"
+                tk.Label(
+                    ship_info_frame,
+                    text=slots_text,
+                    font=('Arial', 9),
+                    fg=COLORS['text_dim'],
+                    bg=COLORS['bg_light']
+                ).pack(pady=5)
+
+                # Two-column layout: Installed modules | Available modules
+                columns_frame = tk.Frame(modules_content, bg=COLORS['bg_medium'])
+                columns_frame.pack(fill=tk.X, padx=10, pady=5)
+
+                # Left column: Installed modules
+                installed_frame = tk.Frame(columns_frame, bg=COLORS['bg_medium'])
+                installed_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+
+                tk.Label(
+                    installed_frame,
+                    text="📦 Installed Modules",
+                    font=('Arial', 11, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_medium']
+                ).pack(pady=5)
+
+                # Scrollable installed modules list
+                installed_canvas = tk.Canvas(installed_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=250)
+                installed_scrollbar = tk.Scrollbar(installed_frame, orient="vertical", command=installed_canvas.yview)
+                installed_scrollable = tk.Frame(installed_canvas, bg=COLORS['bg_medium'])
+
+                installed_scrollable.bind(
+                    "<Configure>",
+                    lambda e: installed_canvas.configure(scrollregion=(0, 0, installed_canvas.winfo_width(), installed_scrollable.winfo_reqheight()))
+                )
+
+                installed_canvas.create_window((0, 0), window=installed_scrollable, anchor="nw")
+                installed_canvas.configure(yscrollcommand=installed_scrollbar.set)
+                self.bind_mousewheel(installed_canvas, installed_scrollable)
+
+                # Display installed modules by type
+                has_modules = False
+                for module_type in ['weapon', 'defense', 'utility', 'engine']:
+                    installed = vessel.installed_modules[module_type]
+                    if installed:
+                        has_modules = True
+                        type_header = tk.Label(
+                            installed_scrollable,
+                            text=f"▸ {module_type.title()}",
+                            font=('Arial', 10, 'bold'),
+                            fg=COLORS['text_accent'],
+                            bg=COLORS['bg_medium']
+                        )
+                        type_header.pack(anchor='w', padx=5, pady=(5, 2))
+
+                        for module_id in installed:
+                            if module_id in MODULES:
+                                module_data = MODULES[module_id]
+
+                                module_frame = tk.Frame(installed_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                                module_frame.pack(fill=tk.X, padx=5, pady=2)
+
+                                info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
+                                info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+                                tk.Label(
+                                    info_frame,
+                                    text=module_data['name'],
+                                    font=('Arial', 9, 'bold'),
+                                    fg=COLORS['text'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Show module specs using helper function
+                                specs_text = format_module_specs(module_data)
+                                tk.Label(
+                                    info_frame,
+                                    text=specs_text,
+                                    font=('Arial', 8),
+                                    fg=COLORS['text_dim'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Remove button
+                                self.create_button(
+                                    module_frame,
+                                    "Remove",
+                                    lambda m=module_id, t=module_type: self.remove_module_action(m, t),
+                                    width=8,
+                                    style='danger'
+                                ).pack(side=tk.RIGHT, padx=5, pady=5)
+
+                if not has_modules:
+                    tk.Label(
+                        installed_scrollable,
+                        text="No modules installed",
+                        font=('Arial', 10),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_medium']
+                    ).pack(pady=20)
+
+                installed_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                installed_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+                # Right column: Available modules (in inventory)
+                available_frame = tk.Frame(columns_frame, bg=COLORS['bg_medium'])
+                available_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5, 0))
+
+                tk.Label(
+                    available_frame,
+                    text="🎒 Available Modules (In Inventory)",
+                    font=('Arial', 11, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_medium']
+                ).pack(pady=5)
+
+                # Scrollable available modules list
+                available_canvas = tk.Canvas(available_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=250)
+                available_scrollbar = tk.Scrollbar(available_frame, orient="vertical", command=available_canvas.yview)
+                available_scrollable = tk.Frame(available_canvas, bg=COLORS['bg_medium'])
+
+                available_scrollable.bind(
+                    "<Configure>",
+                    lambda e: available_canvas.configure(scrollregion=(0, 0, available_canvas.winfo_width(), available_scrollable.winfo_reqheight()))
+                )
+
+                available_canvas.create_window((0, 0), window=available_scrollable, anchor="nw")
+                available_canvas.configure(yscrollcommand=available_scrollbar.set)
+                self.bind_mousewheel(available_canvas, available_scrollable)
+
+                # Get modules from player inventory
+                available_modules = {}
+                for item_id, quantity in self.engine.player.ship_cargo.items():
+                    if item_id in MODULES:
+                        module_data = MODULES[item_id]
+                        module_type = module_data['type']
+                        if module_type not in available_modules:
+                            available_modules[module_type] = []
+                        available_modules[module_type].append((item_id, module_data, quantity))
+
+                if available_modules:
+                    for module_type in ['weapon', 'defense', 'utility', 'engine']:
+                        if module_type in available_modules:
+                            type_header = tk.Label(
+                                available_scrollable,
+                                text=f"▸ {module_type.title()}",
+                                font=('Arial', 10, 'bold'),
+                                fg=COLORS['text_accent'],
+                                bg=COLORS['bg_medium']
+                            )
+                            type_header.pack(anchor='w', padx=5, pady=(5, 2))
+
+                            for module_id, module_data, quantity in available_modules[module_type]:
+                                module_frame = tk.Frame(available_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                                module_frame.pack(fill=tk.X, padx=5, pady=2)
+
+                                info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
+                                info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+                                tk.Label(
+                                    info_frame,
+                                    text=f"{module_data['name']} (x{quantity})",
+                                    font=('Arial', 9, 'bold'),
+                                    fg=COLORS['text'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Show module specs using helper function
+                                specs_text = format_module_specs(module_data)
+                                tk.Label(
+                                    info_frame,
+                                    text=specs_text,
+                                    font=('Arial', 8),
+                                    fg=COLORS['text_dim'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Check if slots available
+                                current_count = len(vessel.installed_modules[module_type])
+                                max_slots = vessel.module_slots[module_type]
+                                can_install = current_count < max_slots
+
+                                if can_install:
+                                    self.create_button(
+                                        module_frame,
+                                        "Install",
+                                        lambda m=module_id: self.install_module_action(m),
+                                        width=8,
+                                        style='success'
+                                    ).pack(side=tk.RIGHT, padx=5, pady=5)
+                                else:
+                                    tk.Label(
+                                        module_frame,
+                                        text="No Slots",
+                                        font=('Arial', 8),
+                                        fg=COLORS['danger'],
+                                        bg=COLORS['bg_light']
+                                    ).pack(side=tk.RIGHT, padx=5, pady=5)
+
+                else:
+                    tk.Label(
+                        available_scrollable,
+                        text="No modules in inventory\n\nPurchase modules from the Module Market",
+                        font=('Arial', 10),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_medium'],
+                        justify=tk.CENTER
+                    ).pack(pady=20)
+
+                available_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                available_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+                # Bottom row: Station inventory
+                station_frame = tk.Frame(modules_content, bg=COLORS['bg_medium'])
+                station_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
+
+                tk.Label(
+                    station_frame,
+                    text="🏢 Station Storage Modules",
+                    font=('Arial', 11, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_medium']
+                ).pack(pady=5)
+
+                # Scrollable station modules list
+                station_canvas = tk.Canvas(station_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=200)
+                station_scrollbar = tk.Scrollbar(station_frame, orient="vertical", command=station_canvas.yview)
+                station_scrollable = tk.Frame(station_canvas, bg=COLORS['bg_medium'])
+
+                station_scrollable.bind(
+                    "<Configure>",
+                    lambda e: station_canvas.configure(scrollregion=(0, 0, station_canvas.winfo_width(), station_scrollable.winfo_reqheight()))
+                )
+
+                station_canvas.create_window((0, 0), window=station_scrollable, anchor="nw")
+                station_canvas.configure(yscrollcommand=station_scrollbar.set)
+                self.bind_mousewheel(station_canvas, station_scrollable)
+
+                # Get modules from station inventory
+                current_location = self.engine.player.location
+                station_inventory = self.engine.player.station_inventories.get(current_location, {})
+                station_modules = {}
+                
+                for item_id, quantity in station_inventory.items():
+                    if item_id in MODULES:
+                        module_data = MODULES[item_id]
+                        module_type = module_data['type']
+                        if module_type not in station_modules:
+                            station_modules[module_type] = []
+                        station_modules[module_type].append((item_id, module_data, quantity))
+
+                if station_modules:
+                    for module_type in ['weapon', 'defense', 'utility', 'engine']:
+                        if module_type in station_modules:
+                            type_header = tk.Label(
+                                station_scrollable,
+                                text=f"▸ {module_type.title()}",
+                                font=('Arial', 10, 'bold'),
+                                fg=COLORS['text_accent'],
+                                bg=COLORS['bg_medium']
+                            )
+                            type_header.pack(anchor='w', padx=5, pady=(5, 2))
+
+                            for module_id, module_data, quantity in station_modules[module_type]:
+                                module_frame = tk.Frame(station_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                                module_frame.pack(fill=tk.X, padx=5, pady=2)
+
+                                info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
+                                info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
+
+                                tk.Label(
+                                    info_frame,
+                                    text=f"{module_data['name']} (x{quantity})",
+                                    font=('Arial', 9, 'bold'),
+                                    fg=COLORS['text'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Show module specs using helper function
+                                specs_text = format_module_specs(module_data)
+                                tk.Label(
+                                    info_frame,
+                                    text=specs_text,
+                                    font=('Arial', 8),
+                                    fg=COLORS['text_dim'],
+                                    bg=COLORS['bg_light']
+                                ).pack(anchor='w')
+
+                                # Transfer to ship button
+                                self.create_button(
+                                    module_frame,
+                                    "➜ Ship",
+                                    lambda m=module_id: self.transfer_module_to_ship(m),
+                                    width=8,
+                                    style='info'
+                                ).pack(side=tk.RIGHT, padx=5, pady=5)
+
+                else:
+                    tk.Label(
+                        station_scrollable,
+                        text="No modules stored at this station\n\nUse Status > Transfer to move items to station storage",
+                        font=('Arial', 10),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_medium'],
+                        justify=tk.CENTER
+                    ).pack(pady=20)
+
+                station_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
+                station_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+            create_toggle_section(scrollable_frame, "⚙️ Module Management", build_modules_content)
+
+        # ===== 🚀 SHIPS FOR SALE - EXPANDABLE =====
+        def build_ships_for_sale_content(parent_frame):
+            ships_content = parent_frame
+            
+            # Get available ships from marketplace
+            available_ships = self.engine.ship_market.get_available_ships(
+                self.engine.player.location,
+                self.engine.player.level,
+                self.engine.player.credits
+            )
+
+            if available_ships:
+                # Info about current credits
+                credits_frame = tk.Frame(ships_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                credits_frame.pack(fill=tk.X, padx=10, pady=5)
+
+                tk.Label(
+                    credits_frame,
+                    text=f"Your Credits: {self.engine.player.credits:,} CR | Level: {self.engine.player.level}",
+                    font=('Arial', 10, 'bold'),
+                    fg=COLORS['accent'],
+                    bg=COLORS['bg_light']
+                ).pack(pady=5)
+
+                # Group ships by class
+                ships_by_class = {}
+                for ship in available_ships:
+                    class_type = ship['class_type']
+                    if class_type not in ships_by_class:
+                        ships_by_class[class_type] = []
+                    ships_by_class[class_type].append(ship)
+
+                # Class navigation buttons
+                class_buttons_frame = tk.Frame(ships_content, bg=COLORS['bg_medium'])
+                class_buttons_frame.pack(fill=tk.X, padx=10, pady=5)
+
+                # Container for ship display (will be updated when class is selected)
+                ships_display_frame = tk.Frame(ships_content, bg=COLORS['bg_medium'])
+                ships_display_frame.pack(fill=tk.BOTH, expand=True)
+
+                # Create function to display ships of a specific class
+                def show_class_ships(class_type):
+                    # Clear existing display
+                    for widget in ships_display_frame.winfo_children():
+                        widget.destroy()
+
+                    ships_to_show = ships_by_class.get(class_type, [])
+
+                    if ships_to_show:
+                        # Scrollable ship list
+                        canvas = tk.Canvas(ships_display_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=300)
+                        scrollbar = tk.Scrollbar(ships_display_frame, orient="vertical", command=canvas.yview)
+                        scrollable_frame_inner = tk.Frame(canvas, bg=COLORS['bg_medium'])
+
+                        scrollable_frame_inner.bind(
+                            "<Configure>",
+                            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame_inner.winfo_reqheight()))
+                        )
+
+                        canvas.create_window((0, 0), window=scrollable_frame_inner, anchor="nw")
+                        canvas.configure(yscrollcommand=scrollbar.set)
+                        self.bind_mousewheel(canvas, scrollable_frame_inner)
+
+                        for ship in ships_to_show:
+                            ship_frame = tk.Frame(scrollable_frame_inner, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
+                            ship_frame.pack(fill=tk.X, pady=3, padx=10)
+
+                            info_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
+                            info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=15, pady=10)
+
+                            # Determine ship status color
+                            if not ship.get("in_stock", True):
+                                name_color = COLORS['text_dim']
+                                status_symbol = "🚫 NOT IN STOCK"
+                            elif ship["can_purchase"]:
+                                name_color = COLORS['success']
+                                status_symbol = "✓"
+                            elif not ship["can_pilot"]:
+                                name_color = COLORS['text_dim']
+                                status_symbol = f"🔒 Req Lv{ship['level_req']}"
+                            elif not ship["can_afford"]:
+                                name_color = COLORS['warning']
+                                status_symbol = "💰 Insufficient Credits"
+                            else:
+                                name_color = COLORS['text']
+                                status_symbol = ""
+
+                            # Ship name with status
                             tk.Label(
                                 info_frame,
-                                text=specs_text,
-                                font=('Arial', 8),
-                                fg=COLORS['text_dim'],
+                                text=f"{ship['name']} [{status_symbol}]",
+                                font=('Arial', 11, 'bold'),
+                                fg=name_color,
                                 bg=COLORS['bg_light']
                             ).pack(anchor='w')
 
-                            # Remove button
-                            self.create_button(
-                                module_frame,
-                                "Remove",
-                                lambda m=module_id, t=module_type: self.remove_module_action(m, t),
-                                width=8,
-                                style='danger'
-                            ).pack(side=tk.RIGHT, padx=5, pady=5)
+                            # Ship details with stock indicator
+                            stock_qty = ship['stock']
+                            if stock_qty == 0:
+                                stock_indicator = "Stock: OUT OF STOCK"
+                                stock_color = COLORS['danger']
+                            elif stock_qty == 1:
+                                stock_indicator = "Stock: 1 (LAST ONE!)"
+                                stock_color = COLORS['warning']
+                            elif stock_qty <= 2:
+                                stock_indicator = f"Stock: {stock_qty} (Low)"
+                                stock_color = COLORS['warning']
+                            else:
+                                stock_indicator = f"Stock: {stock_qty}"
+                                stock_color = COLORS['text_dim']
 
-            if not has_modules:
+                            details = f"T{ship['tier_num']} {ship['class_type'].title()} | {stock_indicator} | Cost: {ship['cost']:,} CR"
+                            tk.Label(
+                                info_frame,
+                                text=details,
+                                font=('Arial', 9),
+                                fg=stock_color,
+                                bg=COLORS['bg_light']
+                            ).pack(anchor='w')
+
+                            # Stats
+                            stats = ship['stats']
+                            stats_text = f"Hull: {stats['hull_hp']} | Shield: {stats['shield_capacity']} | Speed: {stats['base_speed']} | Cargo: {stats['cargo_capacity']}"
+                            tk.Label(
+                                info_frame,
+                                text=stats_text,
+                                font=('Arial', 8),
+                                fg=COLORS['text_dim'],
+                                bg=COLORS['bg_light']
+                            ).pack(anchor='w', pady=(3, 0))
+
+                            # Buy button
+                            button_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
+                            button_frame.pack(side=tk.RIGHT, padx=10)
+
+                            if not ship.get("in_stock", True):
+                                tk.Label(
+                                    button_frame,
+                                    text="OUT OF\nSTOCK",
+                                    font=('Arial', 9, 'bold'),
+                                    fg=COLORS['danger'],
+                                    bg=COLORS['bg_light'],
+                                    justify=tk.CENTER
+                                ).pack()
+                            elif ship["can_purchase"]:
+                                self.create_button(
+                                    button_frame,
+                                    "Buy",
+                                    lambda s=ship['id']: self.buy_ship_action(s),
+                                    width=8,
+                                    style='success'
+                                ).pack()
+                            elif not ship["can_pilot"]:
+                                tk.Label(
+                                    button_frame,
+                                    text=f"Level {ship['level_req']}\nRequired",
+                                    font=('Arial', 8),
+                                    fg=COLORS['danger'],
+                                    bg=COLORS['bg_light'],
+                                    justify=tk.CENTER
+                                ).pack()
+                            else:
+                                tk.Label(
+                                    button_frame,
+                                    text="Can't\nAfford",
+                                    font=('Arial', 8),
+                                    fg=COLORS['warning'],
+                                    bg=COLORS['bg_light'],
+                                    justify=tk.CENTER
+                                ).pack()
+
+                        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+                        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+                # Create buttons for each class with ship count
+                class_names = {
+                    'fighter': '⚔️ Fighters',
+                    'cruiser': '🚢 Cruisers',
+                    'battleship': '⚓ Battleships',
+                    'carrier': '🛸 Carriers',
+                    'destroyer': '💥 Destroyers',
+                    'hauler': '📦 Haulers',
+                    'refinery': '⚗️ Refineries',
+                    'scout': '🔍 Scouts'
+                }
+
+                selected_class = [None]  # Mutable to track selection
+
+                for class_type in sorted(ships_by_class.keys()):
+                    ship_count = len(ships_by_class[class_type])
+                    button_text = f"{class_names.get(class_type, class_type.title())} ({ship_count})"
+
+                    btn = self.create_button(
+                        class_buttons_frame,
+                        button_text,
+                        lambda c=class_type: show_class_ships(c),
+                        width=15,
+                        style='info'
+                    )
+                    btn.pack(side=tk.LEFT, padx=3, pady=5)
+
+                    # Auto-select first class
+                    if selected_class[0] is None:
+                        selected_class[0] = class_type
+
+                # Show the first class by default
+                if selected_class[0]:
+                    show_class_ships(selected_class[0])
+
+            else:
                 tk.Label(
-                    installed_scrollable,
-                    text="No modules installed",
-                    font=('Arial', 10),
+                    ships_content,
+                    text="No ships for sale at this station",
+                    font=('Arial', 11),
                     fg=COLORS['text_dim'],
                     bg=COLORS['bg_medium']
                 ).pack(pady=20)
 
-            installed_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-            installed_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        create_toggle_section(scrollable_frame, "🚀 Ships For Sale", build_ships_for_sale_content)
 
-            # Right column: Available modules (in inventory)
-            available_frame = tk.Frame(columns_frame, bg=COLORS['bg_medium'])
-            available_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5, 0))
-
-            tk.Label(
-                available_frame,
-                text="🎒 Available Modules (In Inventory)",
-                font=('Arial', 11, 'bold'),
-                fg=COLORS['accent'],
-                bg=COLORS['bg_medium']
-            ).pack(pady=5)
-
-            # Scrollable available modules list
-            available_canvas = tk.Canvas(available_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=250)
-            available_scrollbar = tk.Scrollbar(available_frame, orient="vertical", command=available_canvas.yview)
-            available_scrollable = tk.Frame(available_canvas, bg=COLORS['bg_medium'])
-
-            available_scrollable.bind(
-                "<Configure>",
-                lambda e: available_canvas.configure(scrollregion=(0, 0, available_canvas.winfo_width(), available_scrollable.winfo_reqheight()))
-            )
-
-            available_canvas.create_window((0, 0), window=available_scrollable, anchor="nw")
-            available_canvas.configure(yscrollcommand=available_scrollbar.set)
-            self.bind_mousewheel(available_canvas, available_scrollable)
-
-            # Get modules from player inventory
-            available_modules = {}
-            for item_id, quantity in self.engine.player.ship_cargo.items():
-                if item_id in MODULES:
-                    module_data = MODULES[item_id]
-                    module_type = module_data['type']
-                    if module_type not in available_modules:
-                        available_modules[module_type] = []
-                    available_modules[module_type].append((item_id, module_data, quantity))
-
-            if available_modules:
-                for module_type in ['weapon', 'defense', 'utility', 'engine']:
-                    if module_type in available_modules:
-                        type_header = tk.Label(
-                            available_scrollable,
-                            text=f"▸ {module_type.title()}",
-                            font=('Arial', 10, 'bold'),
-                            fg=COLORS['text_accent'],
-                            bg=COLORS['bg_medium']
-                        )
-                        type_header.pack(anchor='w', padx=5, pady=(5, 2))
-
-                        for module_id, module_data, quantity in available_modules[module_type]:
-                            module_frame = tk.Frame(available_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                            module_frame.pack(fill=tk.X, padx=5, pady=2)
-
-                            info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
-                            info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
-
-                            tk.Label(
-                                info_frame,
-                                text=f"{module_data['name']} (x{quantity})",
-                                font=('Arial', 9, 'bold'),
-                                fg=COLORS['text'],
-                                bg=COLORS['bg_light']
-                            ).pack(anchor='w')
-
-                            # Show module specs using helper function
-                            specs_text = format_module_specs(module_data)
-                            tk.Label(
-                                info_frame,
-                                text=specs_text,
-                                font=('Arial', 8),
-                                fg=COLORS['text_dim'],
-                                bg=COLORS['bg_light']
-                            ).pack(anchor='w')
-
-                            # Check if slots available
-                            current_count = len(vessel.installed_modules[module_type])
-                            max_slots = vessel.module_slots[module_type]
-                            can_install = current_count < max_slots
-
-                            if can_install:
-                                self.create_button(
-                                    module_frame,
-                                    "Install",
-                                    lambda m=module_id: self.install_module_action(m),
-                                    width=8,
-                                    style='success'
-                                ).pack(side=tk.RIGHT, padx=5, pady=5)
-                            else:
-                                tk.Label(
-                                    module_frame,
-                                    text="No Slots",
-                                    font=('Arial', 8),
-                                    fg=COLORS['danger'],
-                                    bg=COLORS['bg_light']
-                                ).pack(side=tk.RIGHT, padx=5, pady=5)
-
-            else:
-                tk.Label(
-                    available_scrollable,
-                    text="No modules in inventory\n\nPurchase modules from the Module Market",
-                    font=('Arial', 10),
-                    fg=COLORS['text_dim'],
-                    bg=COLORS['bg_medium'],
-                    justify=tk.CENTER
-                ).pack(pady=20)
-
-            available_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-            available_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-            # Bottom row: Station inventory
-            station_frame = tk.Frame(modules_content, bg=COLORS['bg_medium'])
-            station_frame.pack(fill=tk.X, padx=10, pady=(10, 5))
-
-            tk.Label(
-                station_frame,
-                text="🏢 Station Storage Modules",
-                font=('Arial', 11, 'bold'),
-                fg=COLORS['accent'],
-                bg=COLORS['bg_medium']
-            ).pack(pady=5)
-
-            # Scrollable station modules list
-            station_canvas = tk.Canvas(station_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=200)
-            station_scrollbar = tk.Scrollbar(station_frame, orient="vertical", command=station_canvas.yview)
-            station_scrollable = tk.Frame(station_canvas, bg=COLORS['bg_medium'])
-
-            station_scrollable.bind(
-                "<Configure>",
-                lambda e: station_canvas.configure(scrollregion=(0, 0, station_canvas.winfo_width(), station_scrollable.winfo_reqheight()))
-            )
-
-            station_canvas.create_window((0, 0), window=station_scrollable, anchor="nw")
-            station_canvas.configure(yscrollcommand=station_scrollbar.set)
-            self.bind_mousewheel(station_canvas, station_scrollable)
-
-            # Get modules from station inventory
-            current_location = self.engine.player.location
-            station_inventory = self.engine.player.station_inventories.get(current_location, {})
-            station_modules = {}
+        # ===== 📐 SHIP CONSTRUCTION BLUEPRINTS - EXPANDABLE =====
+        def build_blueprints_content(parent_frame):
+            content = parent_frame
             
-            for item_id, quantity in station_inventory.items():
-                if item_id in MODULES:
-                    module_data = MODULES[item_id]
-                    module_type = module_data['type']
-                    if module_type not in station_modules:
-                        station_modules[module_type] = []
-                    station_modules[module_type].append((item_id, module_data, quantity))
-
-            if station_modules:
-                for module_type in ['weapon', 'defense', 'utility', 'engine']:
-                    if module_type in station_modules:
-                        type_header = tk.Label(
-                            station_scrollable,
-                            text=f"▸ {module_type.title()}",
-                            font=('Arial', 10, 'bold'),
-                            fg=COLORS['text_accent'],
-                            bg=COLORS['bg_medium']
-                        )
-                        type_header.pack(anchor='w', padx=5, pady=(5, 2))
-
-                        for module_id, module_data, quantity in station_modules[module_type]:
-                            module_frame = tk.Frame(station_scrollable, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                            module_frame.pack(fill=tk.X, padx=5, pady=2)
-
-                            info_frame = tk.Frame(module_frame, bg=COLORS['bg_light'])
-                            info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=5)
-
-                            tk.Label(
-                                info_frame,
-                                text=f"{module_data['name']} (x{quantity})",
-                                font=('Arial', 9, 'bold'),
-                                fg=COLORS['text'],
-                                bg=COLORS['bg_light']
-                            ).pack(anchor='w')
-
-                            # Show module specs using helper function
-                            specs_text = format_module_specs(module_data)
-                            tk.Label(
-                                info_frame,
-                                text=specs_text,
-                                font=('Arial', 8),
-                                fg=COLORS['text_dim'],
-                                bg=COLORS['bg_light']
-                            ).pack(anchor='w')
-
-                            # Transfer to ship button
-                            self.create_button(
-                                module_frame,
-                                "➜ Ship",
-                                lambda m=module_id: self.transfer_module_to_ship(m),
-                                width=8,
-                                style='info'
-                            ).pack(side=tk.RIGHT, padx=5, pady=5)
-
-            else:
-                tk.Label(
-                    station_scrollable,
-                    text="No modules stored at this station\n\nUse Status > Transfer to move items to station storage",
-                    font=('Arial', 10),
-                    fg=COLORS['text_dim'],
-                    bg=COLORS['bg_medium'],
-                    justify=tk.CENTER
-                ).pack(pady=20)
-
-            station_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
-            station_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # Ships for sale panel
-        ships_panel, ships_content = self.create_panel(scrollable_frame, "🚀 Ships For Sale")
-        ships_panel.pack(fill=tk.X, pady=(0, 10))
-
-        # Get available ships from marketplace
-        available_ships = self.engine.ship_market.get_available_ships(
-            self.engine.player.location,
-            self.engine.player.level,
-            self.engine.player.credits
-        )
-
-        if available_ships:
-            # Info about current credits
-            credits_frame = tk.Frame(ships_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-            credits_frame.pack(fill=tk.X, padx=10, pady=5)
+            # Current ship info
+            current_frame = tk.Frame(content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
+            current_frame.pack(fill=tk.X, pady=10, padx=10)
 
             tk.Label(
-                credits_frame,
-                text=f"Your Credits: {self.engine.player.credits:,} CR | Level: {self.engine.player.level}",
-                font=('Arial', 10, 'bold'),
+                current_frame,
+                text=f"Current Ship: {self.engine.vessel.name}",
+                font=('Arial', 13, 'bold'),
                 fg=COLORS['accent'],
                 bg=COLORS['bg_light']
-            ).pack(pady=5)
+            ).pack(pady=10)
 
-            # Group ships by class
-            ships_by_class = {}
-            for ship in available_ships:
-                class_type = ship['class_type']
-                if class_type not in ships_by_class:
-                    ships_by_class[class_type] = []
-                ships_by_class[class_type].append(ship)
-
-            # Class navigation buttons
-            class_buttons_frame = tk.Frame(ships_content, bg=COLORS['bg_medium'])
-            class_buttons_frame.pack(fill=tk.X, padx=10, pady=5)
-
-            # Container for ship display (will be updated when class is selected)
-            ships_display_frame = tk.Frame(ships_content, bg=COLORS['bg_medium'])
-            ships_display_frame.pack(fill=tk.BOTH, expand=True)
-
-            # Create function to display ships of a specific class
-            def show_class_ships(class_type):
-                # Clear existing display
-                for widget in ships_display_frame.winfo_children():
-                    widget.destroy()
-
-                ships_to_show = ships_by_class.get(class_type, [])
-
-                if ships_to_show:
-                    # Scrollable ship list
-                    canvas = tk.Canvas(ships_display_frame, bg=COLORS['bg_medium'], highlightthickness=0, height=300)
-                    scrollbar = tk.Scrollbar(ships_display_frame, orient="vertical", command=canvas.yview)
-                    scrollable_frame = tk.Frame(canvas, bg=COLORS['bg_medium'])
-
-                    scrollable_frame.bind(
-                        "<Configure>",
-                        lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
-                    )
-
-                    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-                    canvas.configure(yscrollcommand=scrollbar.set)
-                    self.bind_mousewheel(canvas, scrollable_frame)
-
-                    for ship in ships_to_show:
-                        ship_frame = tk.Frame(scrollable_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
-                        ship_frame.pack(fill=tk.X, pady=3, padx=10)
-
-                        info_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
-                        info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=15, pady=10)
-
-                        # Determine ship status color
-                        if not ship.get("in_stock", True):
-                            name_color = COLORS['text_dim']
-                            status_symbol = "🚫 NOT IN STOCK"
-                        elif ship["can_purchase"]:
-                            name_color = COLORS['success']
-                            status_symbol = "✓"
-                        elif not ship["can_pilot"]:
-                            name_color = COLORS['text_dim']
-                            status_symbol = f"🔒 Req Lv{ship['level_req']}"
-                        elif not ship["can_afford"]:
-                            name_color = COLORS['warning']
-                            status_symbol = "💰 Insufficient Credits"
-                        else:
-                            name_color = COLORS['text']
-                            status_symbol = ""
-
-                        # Ship name with status
-                        tk.Label(
-                            info_frame,
-                            text=f"{ship['name']} [{status_symbol}]",
-                            font=('Arial', 11, 'bold'),
-                            fg=name_color,
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w')
-
-                        # Ship details with stock indicator
-                        stock_qty = ship['stock']
-                        if stock_qty == 0:
-                            stock_indicator = "Stock: OUT OF STOCK"
-                            stock_color = COLORS['danger']
-                        elif stock_qty == 1:
-                            stock_indicator = "Stock: 1 (LAST ONE!)"
-                            stock_color = COLORS['warning']
-                        elif stock_qty <= 2:
-                            stock_indicator = f"Stock: {stock_qty} (Low)"
-                            stock_color = COLORS['warning']
-                        else:
-                            stock_indicator = f"Stock: {stock_qty}"
-                            stock_color = COLORS['text_dim']
-
-                        details = f"T{ship['tier_num']} {ship['class_type'].title()} | {stock_indicator} | Cost: {ship['cost']:,} CR"
-                        tk.Label(
-                            info_frame,
-                            text=details,
-                            font=('Arial', 9),
-                            fg=stock_color,
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w')
-
-                        # Stats
-                        stats = ship['stats']
-                        stats_text = f"Hull: {stats['hull_hp']} | Shield: {stats['shield_capacity']} | Speed: {stats['base_speed']} | Cargo: {stats['cargo_capacity']}"
-                        tk.Label(
-                            info_frame,
-                            text=stats_text,
-                            font=('Arial', 8),
-                            fg=COLORS['text_dim'],
-                            bg=COLORS['bg_light']
-                        ).pack(anchor='w', pady=(3, 0))
-
-                        # Buy button
-                        button_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
-                        button_frame.pack(side=tk.RIGHT, padx=10)
-
-                        if not ship.get("in_stock", True):
-                            tk.Label(
-                                button_frame,
-                                text="OUT OF\nSTOCK",
-                                font=('Arial', 9, 'bold'),
-                                fg=COLORS['danger'],
-                                bg=COLORS['bg_light'],
-                                justify=tk.CENTER
-                            ).pack()
-                        elif ship["can_purchase"]:
-                            self.create_button(
-                                button_frame,
-                                "Buy",
-                                lambda s=ship['id']: self.buy_ship_action(s),
-                                width=8,
-                                style='success'
-                            ).pack()
-                        elif not ship["can_pilot"]:
-                            tk.Label(
-                                button_frame,
-                                text=f"Level {ship['level_req']}\nRequired",
-                                font=('Arial', 8),
-                                fg=COLORS['danger'],
-                                bg=COLORS['bg_light'],
-                                justify=tk.CENTER
-                            ).pack()
-                        else:
-                            tk.Label(
-                                button_frame,
-                                text="Can't\nAfford",
-                                font=('Arial', 8),
-                                fg=COLORS['warning'],
-                                bg=COLORS['bg_light'],
-                                justify=tk.CENTER
-                            ).pack()
-
-                    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-                    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-            # Create buttons for each class with ship count
-            class_names = {
-                'fighter': '⚔️ Fighters',
-                'cruiser': '🚢 Cruisers',
-                'battleship': '⚓ Battleships',
-                'carrier': '🛸 Carriers',
-                'destroyer': '💥 Destroyers',
-                'hauler': '📦 Haulers',
-                'refinery': '⚗️ Refineries',
-                'scout': '🔍 Scouts'
-            }
-
-            selected_class = [None]  # Mutable to track selection
-
-            for class_type in sorted(ships_by_class.keys()):
-                ship_count = len(ships_by_class[class_type])
-                button_text = f"{class_names.get(class_type, class_type.title())} ({ship_count})"
-
-                btn = self.create_button(
-                    class_buttons_frame,
-                    button_text,
-                    lambda c=class_type: show_class_ships(c),
-                    width=15,
-                    style='info'
-                )
-                btn.pack(side=tk.LEFT, padx=3, pady=5)
-
-                # Auto-select first class
-                if selected_class[0] is None:
-                    selected_class[0] = class_type
-
-            # Show the first class by default
-            if selected_class[0]:
-                show_class_ships(selected_class[0])
-
-        else:
+            ship_data = VESSEL_CLASSES[self.engine.vessel.vessel_class_id]
+            stats_text = f"Hull: {ship_data['hull_hp']} | Shield: {ship_data['shield_capacity']} | " \
+                        f"Speed: {ship_data['base_speed']} | Cargo: {ship_data['cargo_capacity']}"
             tk.Label(
-                ships_content,
-                text="No ships for sale at this station",
-                font=('Arial', 11),
-                fg=COLORS['text_dim'],
-                bg=COLORS['bg_medium']
-            ).pack(pady=20)
-
-        panel, content = self.create_panel(scrollable_frame, "Ship Construction Blueprints (Manufacturing)")
-        panel.pack(fill=tk.X)
-
-        # Current ship info
-        current_frame = tk.Frame(content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
-        current_frame.pack(fill=tk.X, pady=10, padx=10)
-
-        tk.Label(
-            current_frame,
-            text=f"Current Ship: {self.engine.vessel.name}",
-            font=('Arial', 13, 'bold'),
-            fg=COLORS['accent'],
-            bg=COLORS['bg_light']
-        ).pack(pady=10)
-
-        ship_data = VESSEL_CLASSES[self.engine.vessel.vessel_class_id]
-        stats_text = f"Hull: {ship_data['hull_hp']} | Shield: {ship_data['shield_capacity']} | " \
-                    f"Speed: {ship_data['base_speed']} | Cargo: {ship_data['cargo_capacity']}"
-        tk.Label(
-            current_frame,
-            text=stats_text,
-            font=('Arial', 9),
-            fg=COLORS['text'],
-            bg=COLORS['bg_light']
-        ).pack(pady=5)
-
-        # Filter ships by player level
-        from data import SHIP_RECIPES
-
-        available_ships = []
-        for ship_id, ship_data in list(VESSEL_CLASSES.items())[:30]:  # Limit display
-            if ship_data['level_requirement'] <= self.engine.player.level + 5:  # Show some ahead
-                available_ships.append({
-                    'id': ship_id,
-                    'name': ship_data['name'],
-                    'level_req': ship_data['level_requirement'],
-                    'type': ship_data['class_type'],
-                    'variant': ship_data.get('variant', 'standard'),
-                    'tier_num': ship_data.get('tier_num', 1),
-                    'stats': ship_data
-                })
-
-        if not available_ships:
-            tk.Label(
-                content,
-                text="No ship blueprints available",
-                font=('Arial', 11),
-                fg=COLORS['text_dim'],
-                bg=COLORS['bg_medium']
-            ).pack(pady=20)
-            return
-
-        # Scrollable ship list
-        canvas = tk.Canvas(content, bg=COLORS['bg_medium'], highlightthickness=0)
-        scrollbar = tk.Scrollbar(content, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg=COLORS['bg_medium'])
-
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
-        )
-
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        self.bind_mousewheel(canvas, scrollable_frame)
-
-        for ship in available_ships:
-            ship_frame = tk.Frame(scrollable_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
-            ship_frame.pack(fill=tk.X, pady=5, padx=10)
-
-            # Ship info
-            info_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
-            info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=15, pady=10)
-
-            # Indicate if locked by level or faction
-            locked = ship['level_req'] > self.engine.player.level
-            is_faction = ship['stats'].get('faction') is not None
-            name_color = COLORS['text_dim'] if locked else (COLORS['warning'] if is_faction else COLORS['accent'])
-            lock_symbol = "🔒 " if locked else ""
-            faction_symbol = "⭐ " if is_faction else ""
-
-            tk.Label(
-                info_frame,
-                text=f"{lock_symbol}{faction_symbol}{ship['name']}",
-                font=('Arial', 11, 'bold'),
-                fg=name_color,
-                bg=COLORS['bg_light']
-            ).pack(anchor='w')
-
-            variant_text = f"{ship['variant'].title()} {ship['type'].title()} T{ship['tier_num']} | Level: {ship['level_req']}"
-            if is_faction:
-                faction_name = ship['stats'].get('faction', '').replace('_', ' ').title()
-                variant_text += f" | {faction_name} FACTION"
-
-            tk.Label(
-                info_frame,
-                text=variant_text,
-                font=('Arial', 9),
-                fg=COLORS['text_dim'],
-                bg=COLORS['bg_light']
-            ).pack(anchor='w', pady=2)
-
-            stats_text = f"Hull: {ship['stats']['hull_hp']} | Shield: {ship['stats']['shield_capacity']} | " \
-                        f"Speed: {ship['stats']['base_speed']} | Cargo: {ship['stats']['cargo_capacity']}"
-            tk.Label(
-                info_frame,
+                current_frame,
                 text=stats_text,
-                font=('Arial', 8),
+                font=('Arial', 9),
                 fg=COLORS['text'],
                 bg=COLORS['bg_light']
-            ).pack(anchor='w', pady=2)
+            ).pack(pady=5)
 
-            # Component requirements (only for non-faction ships)
-            if is_faction:
+            # Filter ships by player level
+            from data import SHIP_RECIPES
+
+            available_ships = []
+            for ship_id, ship_data in list(VESSEL_CLASSES.items())[:30]:  # Limit display
+                if ship_data['level_requirement'] <= self.engine.player.level + 5:  # Show some ahead
+                    available_ships.append({
+                        'id': ship_id,
+                        'name': ship_data['name'],
+                        'level_req': ship_data['level_requirement'],
+                        'type': ship_data['class_type'],
+                        'variant': ship_data.get('variant', 'standard'),
+                        'tier_num': ship_data.get('tier_num', 1),
+                        'stats': ship_data
+                    })
+
+            if not available_ships:
+                tk.Label(
+                    content,
+                    text="No ship blueprints available",
+                    font=('Arial', 11),
+                    fg=COLORS['text_dim'],
+                    bg=COLORS['bg_medium']
+                ).pack(pady=20)
+                return
+
+            # Scrollable ship list
+            canvas = tk.Canvas(content, bg=COLORS['bg_medium'], highlightthickness=0)
+            scrollbar = tk.Scrollbar(content, orient="vertical", command=canvas.yview)
+            scrollable_frame_inner = tk.Frame(canvas, bg=COLORS['bg_medium'])
+
+            scrollable_frame_inner.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame_inner.winfo_reqheight()))
+            )
+
+            canvas.create_window((0, 0), window=scrollable_frame_inner, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
+            self.bind_mousewheel(canvas, scrollable_frame_inner)
+
+            for ship in available_ships:
+                ship_frame = tk.Frame(scrollable_frame_inner, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
+                ship_frame.pack(fill=tk.X, pady=5, padx=10)
+
+                # Ship info
+                info_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
+                info_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=15, pady=10)
+
+                # Indicate if locked by level or faction
+                locked = ship['level_req'] > self.engine.player.level
+                is_faction = ship['stats'].get('faction') is not None
+                name_color = COLORS['text_dim'] if locked else (COLORS['warning'] if is_faction else COLORS['accent'])
+                lock_symbol = "🔒 " if locked else ""
+                faction_symbol = "⭐ " if is_faction else ""
+
                 tk.Label(
                     info_frame,
-                    text="⚠️ UNCRAFTABLE - Obtained from missions and combat only",
-                    font=('Arial', 8),
-                    fg=COLORS['warning'],
+                    text=f"{lock_symbol}{faction_symbol}{ship['name']}",
+                    font=('Arial', 11, 'bold'),
+                    fg=name_color,
                     bg=COLORS['bg_light']
-                ).pack(anchor='w', pady=2)
-            elif ship['id'] in SHIP_RECIPES:
-                recipe = SHIP_RECIPES[ship['id']]
-                components_needed = len(recipe['components'])
-                components_have = sum(1 for comp_id in recipe['components'].keys()
-                                     if self.engine.player.ship_cargo.get(comp_id, 0) >= 1)
+                ).pack(anchor='w')
 
-                comp_color = COLORS['success'] if components_have == components_needed else COLORS['danger']
+                variant_text = f"{ship['variant'].title()} {ship['type'].title()} T{ship['tier_num']} | Level: {ship['level_req']}"
+                if is_faction:
+                    faction_name = ship['stats'].get('faction', '').replace('_', ' ').title()
+                    variant_text += f" | {faction_name} FACTION"
+
                 tk.Label(
                     info_frame,
-                    text=f"Components: {components_have}/{components_needed} | Build time: {recipe['time']//60}m",
-                    font=('Arial', 8),
-                    fg=comp_color,
-                    bg=COLORS['bg_light']
-                ).pack(anchor='w', pady=2)
-
-            # Action buttons
-            btn_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
-            btn_frame.pack(side=tk.RIGHT, padx=15, pady=10)
-
-            if locked:
-                tk.Label(
-                    btn_frame,
-                    text="Locked",
-                    font=('Arial', 10, 'bold'),
+                    text=variant_text,
+                    font=('Arial', 9),
                     fg=COLORS['text_dim'],
                     bg=COLORS['bg_light']
-                ).pack()
-            else:
-                # Show purchase price
-                purchase_price = self.engine.ship_market.calculate_ship_cost(ship['id'])
+                ).pack(anchor='w', pady=2)
+
+                stats_text = f"Hull: {ship['stats']['hull_hp']} | Shield: {ship['stats']['shield_capacity']} | " \
+                            f"Speed: {ship['stats']['base_speed']} | Cargo: {ship['stats']['cargo_capacity']}"
                 tk.Label(
-                    btn_frame,
-                    text=f"Buy: {purchase_price:,} CR",
-                    font=('Arial', 9),
+                    info_frame,
+                    text=stats_text,
+                    font=('Arial', 8),
                     fg=COLORS['text'],
                     bg=COLORS['bg_light']
-                ).pack(pady=2)
+                ).pack(anchor='w', pady=2)
 
-                # Buy button
-                self.create_button(
-                    btn_frame,
-                    "Buy Ship",
-                    lambda s=ship['id']: self.buy_ship_action(s),
-                    width=12,
-                    style='success'
-                ).pack(pady=2)
+                # Component requirements (only for non-faction ships)
+                if is_faction:
+                    tk.Label(
+                        info_frame,
+                        text="⚠️ UNCRAFTABLE - Obtained from missions and combat only",
+                        font=('Arial', 8),
+                        fg=COLORS['warning'],
+                        bg=COLORS['bg_light']
+                    ).pack(anchor='w', pady=2)
+                elif ship['id'] in SHIP_RECIPES:
+                    recipe = SHIP_RECIPES[ship['id']]
+                    components_needed = len(recipe['components'])
+                    components_have = sum(1 for comp_id in recipe['components'].keys()
+                                         if self.engine.player.ship_cargo.get(comp_id, 0) >= 1)
 
-                # Show sell price if player owns this ship
-                if self.engine.player.has_item(ship['id'], 1):
-                    sell_price = self.engine.ship_market.calculate_ship_value(ship['id'])
+                    comp_color = COLORS['success'] if components_have == components_needed else COLORS['danger']
+                    tk.Label(
+                        info_frame,
+                        text=f"Components: {components_have}/{components_needed} | Build time: {recipe['time']//60}m",
+                        font=('Arial', 8),
+                        fg=comp_color,
+                        bg=COLORS['bg_light']
+                    ).pack(anchor='w', pady=2)
+
+                # Action buttons
+                btn_frame = tk.Frame(ship_frame, bg=COLORS['bg_light'])
+                btn_frame.pack(side=tk.RIGHT, padx=15, pady=10)
+
+                if locked:
                     tk.Label(
                         btn_frame,
-                        text=f"Sell: {sell_price:,} CR",
+                        text="Locked",
+                        font=('Arial', 10, 'bold'),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_light']
+                    ).pack()
+                else:
+                    # Show purchase price
+                    purchase_price = self.engine.ship_market.calculate_ship_cost(ship['id'])
+                    tk.Label(
+                        btn_frame,
+                        text=f"Buy: {purchase_price:,} CR",
                         font=('Arial', 9),
-                        fg=COLORS['warning'],
+                        fg=COLORS['text'],
                         bg=COLORS['bg_light']
                     ).pack(pady=2)
 
+                    # Buy button
                     self.create_button(
                         btn_frame,
-                        "Sell Ship",
-                        lambda s=ship['id']: self.sell_ship_action(s),
+                        "Buy Ship",
+                        lambda s=ship['id']: self.buy_ship_action(s),
                         width=12,
-                        style='warning'
+                        style='success'
                     ).pack(pady=2)
 
-                # Manufacturing option (only for non-faction ships)
-                if not is_faction:
-                    self.create_button(
-                        btn_frame,
-                        "View Recipe",
-                        lambda: self.show_manufacturing_view('ships'),
-                        width=12,
-                        style='normal'
-                    ).pack(pady=2)
+                    # Show sell price if player owns this ship
+                    if self.engine.player.has_item(ship['id'], 1):
+                        sell_price = self.engine.ship_market.calculate_ship_value(ship['id'])
+                        tk.Label(
+                            btn_frame,
+                            text=f"Sell: {sell_price:,} CR",
+                            font=('Arial', 9),
+                            fg=COLORS['warning'],
+                            bg=COLORS['bg_light']
+                        ).pack(pady=2)
 
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+                        self.create_button(
+                            btn_frame,
+                            "Sell Ship",
+                            lambda s=ship['id']: self.sell_ship_action(s),
+                            width=12,
+                            style='warning'
+                        ).pack(pady=2)
+
+                    # Manufacturing option (only for non-faction ships)
+                    if not is_faction:
+                        self.create_button(
+                            btn_frame,
+                            "View Recipe",
+                            lambda: self.show_manufacturing_view('ships'),
+                            width=12,
+                            style='normal'
+                        ).pack(pady=2)
+
+            canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+            scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        create_toggle_section(scrollable_frame, "📐 Ship Construction Blueprints", build_blueprints_content)
 
     def show_components_view(self):
         """Show component marketplace"""
