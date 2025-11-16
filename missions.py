@@ -304,11 +304,27 @@ class ContractBoard:
             contract = Contract(contract_type, location_id, difficulty)
             self.available_contracts.append(contract)
 
-    def accept_contract(self, contract_id: str) -> Optional[Contract]:
-        """Move contract from available to active"""
+    def accept_contract(self, contract_id: str, player=None) -> Optional[Contract]:
+        """Move contract from available to active and place cargo items if transport contract"""
         for contract in self.available_contracts:
             if contract.contract_id == contract_id:
                 contract.accept()
+                
+                # If it's a cargo transport contract, place items in station inventory
+                if contract.objectives.get("type") == "transport_cargo" and player:
+                    item_id = contract.objectives.get("resource_id")
+                    quantity = contract.objectives.get("quantity", 0)
+                    location_id = contract.location_id
+                    
+                    # Add items to station inventory at contract location
+                    if location_id not in player.station_inventory:
+                        player.station_inventory[location_id] = {}
+                    
+                    if item_id not in player.station_inventory[location_id]:
+                        player.station_inventory[location_id][item_id] = 0
+                    
+                    player.station_inventory[location_id][item_id] += quantity
+                
                 self.available_contracts.remove(contract)
                 self.active_contracts.append(contract)
                 return contract

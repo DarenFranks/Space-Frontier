@@ -6169,8 +6169,28 @@ class VoidDominionGUI:
 
     def accept_contract(self, contract):
         """Accept a contract"""
-        self.engine.contract_board.accept_contract(contract.contract_id)
-        messagebox.showinfo("Contract Accepted", f"Accepted: {contract.name}")
+        self.engine.contract_board.accept_contract(contract.contract_id, self.engine.player)
+        
+        # Show different messages based on contract type
+        if contract.objectives.get("type") == "transport_cargo":
+            item_type = contract.objectives.get("item_type", "resource")
+            item_id = contract.objectives.get("resource_id")
+            quantity = contract.objectives.get("quantity", 0)
+            
+            # Get item name
+            if item_type == "commodity":
+                from data import COMMODITIES
+                item_name = COMMODITIES.get(item_id, {}).get("name", item_id)
+            else:
+                item_name = RESOURCES.get(item_id, {}).get("name", item_id)
+            
+            messagebox.showinfo(
+                "Contract Accepted", 
+                f"Accepted: {contract.name}\n\n{quantity}x {item_name} has been placed in station storage.\n\nLoad them onto your ship and deliver to the destination!"
+            )
+        else:
+            messagebox.showinfo("Contract Accepted", f"Accepted: {contract.name}")
+        
         self.show_contracts_view()
 
     def show_trader_encounter(self):
