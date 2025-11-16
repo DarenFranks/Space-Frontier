@@ -1799,6 +1799,24 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(side=tk.LEFT, padx=(0, 10))
 
+                # Add sell button for commodities and resources
+                if item_id in COMMODITIES:
+                    self.create_button(
+                        right_frame,
+                        "Sell",
+                        lambda i=item_id: self.sell_commodity(i),
+                        width=6,
+                        style='warning'
+                    ).pack(side=tk.LEFT, padx=2)
+                elif item_id in RESOURCES:
+                    self.create_button(
+                        right_frame,
+                        "Sell",
+                        lambda i=item_id: self.sell_resource(i),
+                        width=6,
+                        style='warning'
+                    ).pack(side=tk.LEFT, padx=2)
+
                 # Add load button to transfer from station to ship
                 self.create_button(
                     right_frame,
@@ -1806,7 +1824,7 @@ class VoidDominionGUI:
                     lambda i=item_id: self.load_from_station(i),
                     width=6,
                     style='success'
-                ).pack(side=tk.LEFT)
+                ).pack(side=tk.LEFT, padx=2)
 
             station_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
             station_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
