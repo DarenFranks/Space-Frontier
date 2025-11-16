@@ -1087,48 +1087,126 @@ class VoidDominionGUI:
         self.draw_universe_map(map_content)
 
         # Active contracts
-        contracts_panel, contracts_content = self.create_panel(right_col, "Active Contracts")
+        contracts_panel, contracts_content = self.create_panel(right_col, "📋 Active Contracts")
         contracts_panel.pack(fill=tk.BOTH, expand=True, pady=5)
 
         active_contracts = self.engine.contract_board.get_active_contracts()
 
         if active_contracts:
             for contract in active_contracts:
-                contract_frame = tk.Frame(contracts_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                contract_frame.pack(fill=tk.X, pady=5, padx=5)
+                contract_frame = tk.Frame(contracts_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
+                contract_frame.pack(fill=tk.X, pady=8, padx=5)
+
+                # Header with contract name and type
+                header_frame = tk.Frame(contract_frame, bg=COLORS['bg_medium'])
+                header_frame.pack(fill=tk.X, padx=0, pady=0)
 
                 tk.Label(
-                    contract_frame,
+                    header_frame,
                     text=contract.name,
-                    font=('Arial', 11, 'bold'),
+                    font=('Arial', 12, 'bold'),
                     fg=COLORS['accent'],
-                    bg=COLORS['bg_light']
+                    bg=COLORS['bg_medium']
                 ).pack(anchor='w', padx=10, pady=5)
 
                 tk.Label(
-                    contract_frame,
+                    header_frame,
+                    text=f"Type: {contract.type.replace('_', ' ').title()}",
+                    font=('Arial', 9, 'italic'),
+                    fg=COLORS['text_dim'],
+                    bg=COLORS['bg_medium']
+                ).pack(anchor='w', padx=10, pady=(0, 5))
+
+                # Contract details
+                details_frame = tk.Frame(contract_frame, bg=COLORS['bg_light'])
+                details_frame.pack(fill=tk.X, padx=10, pady=8)
+
+                # Description
+                tk.Label(
+                    details_frame,
+                    text=contract.description,
+                    font=('Arial', 9),
+                    fg=COLORS['text'],
+                    bg=COLORS['bg_light'],
+                    wraplength=400,
+                    justify='left'
+                ).pack(anchor='w', pady=3)
+
+                # Progress
+                progress_frame = tk.Frame(details_frame, bg=COLORS['bg_light'])
+                progress_frame.pack(fill=tk.X, pady=5)
+
+                tk.Label(
+                    progress_frame,
+                    text="Progress:",
+                    font=('Arial', 9, 'bold'),
+                    fg=COLORS['text_accent'],
+                    bg=COLORS['bg_light']
+                ).pack(side=tk.LEFT)
+
+                tk.Label(
+                    progress_frame,
                     text=contract.get_progress_text(),
                     font=('Arial', 9),
                     fg=COLORS['text'],
                     bg=COLORS['bg_light']
-                ).pack(anchor='w', padx=10, pady=2)
+                ).pack(side=tk.LEFT, padx=5)
+
+                # Time and reward info
+                info_frame = tk.Frame(details_frame, bg=COLORS['bg_light'])
+                info_frame.pack(fill=tk.X, pady=3)
 
                 time_remaining = contract.get_time_remaining()
+                minutes = int(time_remaining // 60)
+                seconds = int(time_remaining % 60)
+
                 tk.Label(
-                    contract_frame,
-                    text=f"Time: {int(time_remaining//60)}m {int(time_remaining%60)}s | Reward: {contract.reward:,} CR",
+                    info_frame,
+                    text=f"⏱️ Time Remaining: {minutes}m {seconds}s",
                     font=('Arial', 9),
+                    fg=COLORS['warning'] if time_remaining < 300 else COLORS['text'],
+                    bg=COLORS['bg_light']
+                ).pack(anchor='w')
+
+                tk.Label(
+                    info_frame,
+                    text=f"💰 Reward: {contract.reward:,} CR",
+                    font=('Arial', 10, 'bold'),
                     fg=COLORS['success'],
                     bg=COLORS['bg_light']
-                ).pack(anchor='w', padx=10, pady=2)
+                ).pack(anchor='w', pady=2)
+
+                # Location if applicable
+                if hasattr(contract, 'target_location') and contract.target_location:
+                    location_name = LOCATIONS.get(contract.target_location, {}).get('name', contract.target_location)
+                    tk.Label(
+                        info_frame,
+                        text=f"📍 Target: {location_name}",
+                        font=('Arial', 9),
+                        fg=COLORS['text_dim'],
+                        bg=COLORS['bg_light']
+                    ).pack(anchor='w', pady=2)
+
         else:
+            # No contracts message
+            no_contract_frame = tk.Frame(contracts_content, bg=COLORS['bg_medium'])
+            no_contract_frame.pack(fill=tk.BOTH, expand=True, pady=20, padx=10)
+
             tk.Label(
-                contracts_content,
-                text="No active contracts",
-                font=('Arial', 10),
+                no_contract_frame,
+                text="📋 No Active Contracts",
+                font=('Arial', 12, 'bold'),
                 fg=COLORS['text_dim'],
                 bg=COLORS['bg_medium']
-            ).pack(pady=20)
+            ).pack(pady=(10, 5))
+
+            tk.Label(
+                no_contract_frame,
+                text="Visit the Contracts page to accept new missions",
+                font=('Arial', 9, 'italic'),
+                fg=COLORS['text_dim'],
+                bg=COLORS['bg_medium']
+            ).pack(pady=(0, 10))
 
         # Skill training
         training_panel, training_content = self.create_panel(right_col, "⚡ Skill Training")
