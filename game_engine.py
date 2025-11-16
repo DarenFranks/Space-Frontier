@@ -89,8 +89,8 @@ class GameEngine:
         self.player.current_ship_id = STARTING_VESSEL
         self.berth_manager.store_ship(STARTING_LOCATION, STARTING_VESSEL)
 
-        # Generate initial contracts
-        self.contract_board.generate_contracts(self.player.location)
+        # Generate initial contracts for all locations with at least 1 per location
+        self.contract_board.generate_contracts_all_locations(min_per_location=1, max_per_location=3)
 
         print(f"\n=== Welcome to Void Dominion, Commander {player_name}! ===")
         print(f"You begin your journey in {LOCATIONS[self.player.location]['name']}")

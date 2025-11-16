@@ -283,51 +283,80 @@ class ContractBoard:
     """Manages available contracts"""
 
     def __init__(self):
-        self.available_contracts: List[Contract] = []
+        # Store contracts per location: {location_id: [contracts]}
+        self.available_contracts_by_location: Dict[str, List[Contract]] = {}
         self.active_contracts: List[Contract] = []
         self.last_refresh = time.time()
         self.refresh_interval = 1800  # 30 minutes
 
-    def generate_contracts(self, location_id: str, count: int = 5):
-        """Generate new contracts for a location"""
+    def generate_contracts_all_locations(self, min_per_location: int = 1, max_per_location: int = 3):
+        """Generate contracts for all locations with contract services"""
+        for location_id, location_data in LOCATIONS.items():
+            if "contracts" in location_data.get("services", []):
+                # Generate between min and max contracts per location
+                count = random.randint(min_per_location, max_per_location)
+                self.generate_contracts(location_id, count)
+
+    def generate_contracts(self, location_id: str, count: int = 3):
+        """Generate new contracts for a specific location"""
         location_data = LOCATIONS.get(location_id, {})
 
         if "contracts" not in location_data.get("services", []):
             return
 
-        self.available_contracts = []
+        # Initialize location's contract list if needed
+        if location_id not in self.available_contracts_by_location:
+            self.available_contracts_by_location[location_id] = []
 
+        # Generate contracts
+        contracts = []
         for _ in range(count):
             contract_type = random.choice(list(CONTRACT_TYPES.keys()))
             difficulty = random.randint(1, 3)
 
             contract = Contract(contract_type, location_id, difficulty)
-            self.available_contracts.append(contract)
+            contracts.append(contract)
+
+        # Replace old contracts for this location
+        self.available_contracts_by_location[location_id] = contracts
+
+    def get_available_contracts(self, location_id: str) -> List[Contract]:
+        """Get available contracts for a specific location"""
+        # Generate contracts if this location has none
+        if location_id not in self.available_contracts_by_location:
+            location_data = LOCATIONS.get(location_id, {})
+            if "contracts" in location_data.get("services", []):
+                self.generate_contracts(location_id)
+        
+        return self.available_contracts_by_location.get(location_id, [])
 
     def accept_contract(self, contract_id: str, player=None) -> Optional[Contract]:
         """Move contract from available to active and place cargo items if transport contract"""
-        for contract in self.available_contracts:
-            if contract.contract_id == contract_id:
-                contract.accept()
-                
-                # If it's a cargo transport contract, place items in station inventory
-                if contract.objectives.get("type") == "transport_cargo" and player:
-                    item_id = contract.objectives.get("resource_id")
-                    quantity = contract.objectives.get("quantity", 0)
-                    location_id = contract.location_id
+        # Search all locations for the contract
+        for location_id, contracts in self.available_contracts_by_location.items():
+            for contract in contracts:
+                if contract.contract_id == contract_id:
+                    contract.accept()
                     
-                    # Add items to station inventory at contract location
-                    if location_id not in player.station_inventory:
-                        player.station_inventory[location_id] = {}
+                    # If it's a cargo transport contract, place items in station inventory
+                    if contract.objectives.get("type") == "transport_cargo" and player:
+                        item_id = contract.objectives.get("resource_id")
+                        quantity = contract.objectives.get("quantity", 0)
+                        location_id = contract.location_id
+                        
+                        # Add items to station inventory at contract location
+                        if location_id not in player.station_inventory:
+                            player.station_inventory[location_id] = {}
+                        
+                        if item_id not in player.station_inventory[location_id]:
+                            player.station_inventory[location_id][item_id] = 0
+                        
+                        player.station_inventory[location_id][item_id] += quantity
                     
-                    if item_id not in player.station_inventory[location_id]:
-                        player.station_inventory[location_id][item_id] = 0
-                    
-                    player.station_inventory[location_id][item_id] += quantity
-                
-                self.available_contracts.remove(contract)
-                self.active_contracts.append(contract)
-                return contract
+                    # Remove from available contracts for this location
+                    contracts.remove(contract)
+                    self.active_contracts.append(contract)
+                    return contract
         return None
 
     def complete_contract(self, contract_id: str) -> Optional[int]:
@@ -360,8 +389,13 @@ class ContractBoard:
 
     def to_dict(self) -> Dict:
         """Convert to dictionary"""
+        # Convert available_contracts_by_location to serializable format
+        available_by_loc = {}
+        for location_id, contracts in self.available_contracts_by_location.items():
+            available_by_loc[location_id] = [c.to_dict() for c in contracts]
+        
         return {
-            "available_contracts": [c.to_dict() for c in self.available_contracts],
+            "available_contracts_by_location": available_by_loc,
             "active_contracts": [c.to_dict() for c in self.active_contracts],
             "last_refresh": self.last_refresh
         }
@@ -370,7 +404,26 @@ class ContractBoard:
     def from_dict(cls, data: Dict) -> 'ContractBoard':
         """Create from dictionary"""
         board = cls()
-        board.available_contracts = [Contract.from_dict(c) for c in data.get("available_contracts", [])]
+        
+        # Load available contracts by location
+        available_by_loc = data.get("available_contracts_by_location", {})
+        for location_id, contracts_data in available_by_loc.items():
+            board.available_contracts_by_location[location_id] = [
+                Contract.from_dict(c) for c in contracts_data
+            ]
+        
+        # Handle old save format (legacy compatibility)
+        if "available_contracts" in data and not available_by_loc:
+            # Old format had a single list - put them all in a generic location
+            old_contracts = [Contract.from_dict(c) for c in data["available_contracts"]]
+            if old_contracts:
+                # Group by location_id
+                for contract in old_contracts:
+                    loc_id = contract.location_id
+                    if loc_id not in board.available_contracts_by_location:
+                        board.available_contracts_by_location[loc_id] = []
+                    board.available_contracts_by_location[loc_id].append(contract)
+        
         board.active_contracts = [Contract.from_dict(c) for c in data.get("active_contracts", [])]
         board.last_refresh = data.get("last_refresh", time.time())
         return board

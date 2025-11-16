@@ -1970,9 +1970,8 @@ class VoidDominionGUI:
             ).pack(expand=True)
             return
 
-        # Generate contracts if none available
-        if not self.engine.contract_board.available_contracts:
-            self.engine.contract_board.generate_contracts(self.engine.player.location)
+        # Get contracts for current location (generates if needed)
+        available_contracts = self.engine.contract_board.get_available_contracts(self.engine.player.location)
 
         panel, content = self.create_panel(self.content_frame, "Available Contracts")
         panel.pack(fill=tk.BOTH, expand=True)
@@ -1991,7 +1990,7 @@ class VoidDominionGUI:
         canvas.configure(yscrollcommand=scrollbar.set)
         self.bind_mousewheel(canvas, scrollable_frame)
 
-        for contract in self.engine.contract_board.available_contracts:
+        for contract in available_contracts:
             contract_frame = tk.Frame(scrollable_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
             contract_frame.pack(fill=tk.X, pady=10, padx=10)
 
