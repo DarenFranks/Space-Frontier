@@ -1663,7 +1663,7 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(anchor='w')
 
-                # Right side - value and sell button
+                # Right side - value, buy and sell buttons
                 right_frame = tk.Frame(item_frame, bg=COLORS['bg_light'])
                 right_frame.pack(side=tk.RIGHT, padx=10, pady=5)
 
@@ -1675,23 +1675,37 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(side=tk.LEFT, padx=(0, 10))
 
-                # Add sell button for commodities and resources
+                # Add buy and sell buttons for commodities and resources
                 if item_id in COMMODITIES:
+                    self.create_button(
+                        right_frame,
+                        "Buy",
+                        lambda i=item_id: self.buy_commodity(i),
+                        width=6,
+                        style='success'
+                    ).pack(side=tk.LEFT, padx=2)
                     self.create_button(
                         right_frame,
                         "Sell",
                         lambda i=item_id: self.sell_commodity(i),
                         width=6,
                         style='warning'
-                    ).pack(side=tk.LEFT)
+                    ).pack(side=tk.LEFT, padx=2)
                 elif item_id in RESOURCES:
+                    self.create_button(
+                        right_frame,
+                        "Buy",
+                        lambda i=item_id: self.buy_resource(i),
+                        width=6,
+                        style='success'
+                    ).pack(side=tk.LEFT, padx=2)
                     self.create_button(
                         right_frame,
                         "Sell",
                         lambda i=item_id: self.sell_resource(i),
                         width=6,
                         style='warning'
-                    ).pack(side=tk.LEFT)
+                    ).pack(side=tk.LEFT, padx=2)
 
             ship_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
             ship_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -1787,7 +1801,7 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(anchor='w')
 
-                # Right side - value and load button
+                # Right side - value, buy, sell, and load buttons
                 right_frame = tk.Frame(item_frame, bg=COLORS['bg_light'])
                 right_frame.pack(side=tk.RIGHT, padx=10, pady=5)
 
@@ -1799,8 +1813,15 @@ class VoidDominionGUI:
                     bg=COLORS['bg_light']
                 ).pack(side=tk.LEFT, padx=(0, 10))
 
-                # Add sell button for commodities and resources
+                # Add buy and sell buttons for commodities and resources
                 if item_id in COMMODITIES:
+                    self.create_button(
+                        right_frame,
+                        "Buy",
+                        lambda i=item_id: self.buy_commodity(i),
+                        width=6,
+                        style='success'
+                    ).pack(side=tk.LEFT, padx=2)
                     self.create_button(
                         right_frame,
                         "Sell",
@@ -1809,6 +1830,13 @@ class VoidDominionGUI:
                         style='warning'
                     ).pack(side=tk.LEFT, padx=2)
                 elif item_id in RESOURCES:
+                    self.create_button(
+                        right_frame,
+                        "Buy",
+                        lambda i=item_id: self.buy_resource(i),
+                        width=6,
+                        style='success'
+                    ).pack(side=tk.LEFT, padx=2)
                     self.create_button(
                         right_frame,
                         "Sell",
@@ -1823,7 +1851,7 @@ class VoidDominionGUI:
                     "Load",
                     lambda i=item_id: self.load_from_station(i),
                     width=6,
-                    style='success'
+                    style='info'
                 ).pack(side=tk.LEFT, padx=2)
 
             station_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
