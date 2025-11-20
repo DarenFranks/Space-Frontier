@@ -488,6 +488,20 @@ def add_faction_ships():
             "defense_slots": 3,
             "utility_slots": 8,
             "engine_slots": 1
+        },
+        "mothership": {
+            "name": "Eternal Citadel",
+            "description": "Legendary mobile fortress and command center",
+            "cost": 250000000,
+            "hull_hp": 67500,
+            "shield": 22500,
+            "armor": 4500,
+            "speed": 56,
+            "cargo": 18000,
+            "weapon_slots": 4,
+            "defense_slots": 6,
+            "utility_slots": 10,
+            "engine_slots": 2
         }
     }
     

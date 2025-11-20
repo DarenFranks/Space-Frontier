@@ -631,7 +631,6 @@ class ShipMarket:
         """Get current inventory at a station"""
         return self.station_inventories.get(location_id, {})
 
-    def get_available_ships(self, location_id: str, player_level: int, player_credits: int) -> List[Dict]:
     def get_available_ships(self, location_id: str, player_credits: int, player_level: int, player_skills: Dict = None) -> List[Dict]:
         """
         Get ships available for purchase at a station
