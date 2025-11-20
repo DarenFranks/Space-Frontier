@@ -4686,7 +4686,7 @@ LOCATIONS = {
         "services": ["contracts", "market", "repair"],
         "resources": [],
         "danger_level": 0.3,
-        "connections": ["crystal_gardens", "uncharted_expanse", "meridian_gates"]
+        "connections": ["crystal_gardens", "uncharted_expanse", "meridian_gates", "aurora_reach"]
     },
     "uncharted_expanse": {
         "name": "Uncharted Expanse",
@@ -4895,7 +4895,7 @@ LOCATIONS = {
         "services": ["manufacturing", "market", "shipyard", "contracts"],
         "resources": [],
         "danger_level": 0.6,
-        "connections": ["conquest_reach", "ironhold_world", "sovereign_belt"]
+        "connections": ["conquest_reach", "ironhold_world", "sovereign_belt", "garrison_outpost"]
     },
     "sovereign_belt": {
         "name": "Sovereign Belt",
@@ -4915,7 +4915,7 @@ LOCATIONS = {
         "services": ["shipyard", "manufacturing", "market", "contracts"],
         "resources": [],
         "danger_level": 0.63,
-        "connections": ["vanguard_citadel", "bastion_prime", "iron_expanse"]
+        "connections": ["vanguard_citadel", "bastion_prime", "iron_expanse", "garrison_outpost"]
     },
     "iron_expanse": {
         "name": "Iron Expanse",
@@ -5023,6 +5023,8 @@ LOCATIONS["silicon_spire"]["connections"].extend(["convergence_nexus"])
 LOCATIONS["singularity_reach"]["connections"].extend(["recursion_point"])
 LOCATIONS["synthesis_planet"]["connections"].extend(["chronos_expanse", "datacore_prime", "void_forge"])
 LOCATIONS["titan_alpha"]["connections"].extend(["freeport_exchange", "aurora_reach", "sapphire_fields", "eden_prime"])
+LOCATIONS["aurora_reach"]["connections"].extend(["merchant_corridor", "explorer_outpost"])
+LOCATIONS["garrison_outpost"]["connections"].extend(["vanguard_citadel", "dreadnought_yards"])
 LOCATIONS["vanguard_citadel"]["connections"].extend(["dreadnought_yards", "supremacy_throne"])
 LOCATIONS["void_forge"]["connections"].extend(["convergence_nexus"])
 LOCATIONS["warforge_belt"]["connections"].extend(["sovereign_belt"])
