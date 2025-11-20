@@ -345,13 +345,13 @@ class ContractBoard:
                         location_id = contract.location_id
                         
                         # Add items to station inventory at contract location
-                        if location_id not in player.station_inventory:
-                            player.station_inventory[location_id] = {}
+                        if location_id not in player.station_inventories:
+                            player.station_inventories[location_id] = {}
                         
-                        if item_id not in player.station_inventory[location_id]:
-                            player.station_inventory[location_id][item_id] = 0
+                        if item_id not in player.station_inventories[location_id]:
+                            player.station_inventories[location_id][item_id] = 0
                         
-                        player.station_inventory[location_id][item_id] += quantity
+                        player.station_inventories[location_id][item_id] += quantity
                     
                     # Remove from available contracts for this location
                     contracts.remove(contract)
@@ -375,6 +375,51 @@ class ContractBoard:
                 self.active_contracts.remove(contract)
                 return True
         return False
+
+    def complete_delivery_contract(self, contract_id: str, player) -> tuple[bool, str]:
+        """
+        Complete a delivery contract by depositing cargo at destination.
+        Returns (success, message)
+        """
+        for contract in self.active_contracts:
+            if contract.contract_id == contract_id:
+                # Check if this is a delivery contract
+                if contract.objectives.get("type") != "transport_cargo":
+                    return False, "This is not a delivery contract"
+                
+                # Get contract details
+                item_id = contract.objectives.get("resource_id")
+                quantity = contract.objectives.get("quantity", 0)
+                destination = contract.objectives.get("destination")
+                
+                # Check if player is at the destination
+                if player.location != destination:
+                    dest_name = LOCATIONS[destination]["name"]
+                    return False, f"You must be at {dest_name} to complete this delivery"
+                
+                # Check if player has the items in ship cargo
+                if player.ship_cargo.get(item_id, 0) < quantity:
+                    return False, f"You don't have enough {item_id} in your cargo"
+                
+                # Remove items from ship cargo
+                player.ship_cargo[item_id] -= quantity
+                if player.ship_cargo[item_id] == 0:
+                    del player.ship_cargo[item_id]
+                
+                # Add items to destination station inventory
+                if destination not in player.station_inventories:
+                    player.station_inventories[destination] = {}
+                
+                if item_id not in player.station_inventories[destination]:
+                    player.station_inventories[destination][item_id] = 0
+                
+                player.station_inventories[destination][item_id] += quantity
+                
+                # Mark contract as complete
+                contract.completed = True
+                return True, f"Delivery complete! {quantity}x {item_id} deposited at {LOCATIONS[destination]['name']}"
+        
+        return False, "Contract not found"
 
     def check_expired_contracts(self):
         """Mark expired contracts as failed"""
