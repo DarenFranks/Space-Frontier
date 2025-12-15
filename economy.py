@@ -672,7 +672,8 @@ class ShipMarket:
                 skill_level = player_skills.get(skill_id, 0)
                 can_pilot_skill = skill_level >= required_skill_level
             in_stock = stock_quantity > 0
-            can_purchase = can_afford and can_pilot_level and can_pilot_skill and in_stock
+            can_pilot = can_pilot_level and can_pilot_skill  # Combined pilot check
+            can_purchase = can_afford and can_pilot and in_stock
 
             available.append({
                 "id": ship_id,
@@ -686,6 +687,7 @@ class ShipMarket:
                 "skill_req": f"{skill_id} {required_skill_level}+",
                 "stock": stock_quantity,
                 "can_afford": can_afford,
+                "can_pilot": can_pilot,  # Combined level + skill check
                 "can_pilot_level": can_pilot_level,
                 "can_pilot_skill": can_pilot_skill,
                 "in_stock": in_stock,

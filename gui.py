@@ -3392,8 +3392,9 @@ class VoidDominionGUI:
             # Get available ships from marketplace
             available_ships = self.engine.ship_market.get_available_ships(
                 self.engine.player.location,
+                self.engine.player.credits,
                 self.engine.player.level,
-                self.engine.player.credits
+                self.engine.player.skills
             )
 
             if available_ships:
