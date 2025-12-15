@@ -12,7 +12,7 @@ from data import CONTRACT_TYPES, RESOURCES, LOCATIONS
 class Contract:
     """Represents a mission contract"""
 
-    def __init__(self, contract_type: str, location_id: str, difficulty: int = 1):
+    def __init__(self, contract_type: str, location_id: str, difficulty: int = 1, contracts_completed: int = 0):
         self.contract_type = contract_type
         self.location_id = location_id
         self.difficulty = difficulty
@@ -26,12 +26,17 @@ class Contract:
         self.description = template["description"]
         self.time_limit = template["time_limit"]
 
-        # Generate rewards based on difficulty
+        # Calculate reward with progressive scaling
         min_reward, max_reward = template["reward_range"]
-        self.reward = random.randint(
-            min_reward * difficulty,
-            max_reward * difficulty
-        )
+        base_reward = random.randint(min_reward, max_reward)
+
+        # Apply multipliers for balanced progression
+        progression_mult = self._calculate_progression_multiplier(contracts_completed)
+        danger_mult = self._calculate_danger_multiplier(location_id)
+        faction_mult = self._calculate_faction_multiplier(location_id)
+
+        # Final reward formula
+        self.reward = int(base_reward * difficulty * progression_mult * danger_mult * faction_mult)
 
         # Generate objectives based on type
         self.objectives = self._generate_objectives()
@@ -142,6 +147,57 @@ class Contract:
             }
 
         return {}
+
+    def _calculate_progression_multiplier(self, contracts_completed: int) -> float:
+        """
+        Calculate reward multiplier based on player progression
+        Rewards increase as player completes more missions
+        """
+        # Progression tiers every 10 completed contracts
+        tier = contracts_completed // 10
+
+        # Progressive scaling: 1.0x, 1.5x, 2.0x, 2.5x, 3.0x, etc.
+        # Caps at 5.0x after 40 contracts to prevent runaway inflation
+        multiplier = 1.0 + (tier * 0.5)
+        return min(multiplier, 5.0)
+
+    def _calculate_danger_multiplier(self, location_id: str) -> float:
+        """
+        Calculate reward multiplier based on location danger level
+        Dangerous areas pay more
+        """
+        if location_id not in LOCATIONS:
+            return 1.0
+
+        danger_level = LOCATIONS[location_id].get("danger_level", 0.1)
+
+        # Danger-based scaling
+        if danger_level < 0.2:      # Safe zones
+            return 0.8
+        elif danger_level < 0.4:    # Normal zones
+            return 1.0
+        elif danger_level < 0.6:    # Dangerous zones
+            return 1.3
+        elif danger_level < 0.8:    # Very dangerous zones
+            return 1.6
+        else:                        # Extreme danger (0.8+)
+            return 2.0
+
+    def _calculate_faction_multiplier(self, location_id: str) -> float:
+        """
+        Calculate reward multiplier based on faction vs neutral space
+        Faction territories pay more than neutral zones
+        """
+        if location_id not in LOCATIONS:
+            return 1.0
+
+        faction = LOCATIONS[location_id].get("faction")
+
+        # Faction space pays more than neutral space
+        if faction is None:
+            return 0.8  # Neutral space: lower risk, lower reward
+        else:
+            return 1.2  # Faction space: higher stakes, higher reward
 
     def accept(self):
         """Accept the contract"""
@@ -289,15 +345,15 @@ class ContractBoard:
         self.last_refresh = time.time()
         self.refresh_interval = 1800  # 30 minutes
 
-    def generate_contracts_all_locations(self, min_per_location: int = 1, max_per_location: int = 3):
+    def generate_contracts_all_locations(self, min_per_location: int = 1, max_per_location: int = 3, contracts_completed: int = 0):
         """Generate contracts for all locations with contract services"""
         for location_id, location_data in LOCATIONS.items():
             if "contracts" in location_data.get("services", []):
                 # Generate between min and max contracts per location
                 count = random.randint(min_per_location, max_per_location)
-                self.generate_contracts(location_id, count)
+                self.generate_contracts(location_id, count, contracts_completed)
 
-    def generate_contracts(self, location_id: str, count: int = 3):
+    def generate_contracts(self, location_id: str, count: int = 3, contracts_completed: int = 0):
         """Generate new contracts for a specific location"""
         location_data = LOCATIONS.get(location_id, {})
 
@@ -314,7 +370,7 @@ class ContractBoard:
             contract_type = random.choice(list(CONTRACT_TYPES.keys()))
             difficulty = random.randint(1, 3)
 
-            contract = Contract(contract_type, location_id, difficulty)
+            contract = Contract(contract_type, location_id, difficulty, contracts_completed)
             contracts.append(contract)
 
         # Replace old contracts for this location

@@ -5329,49 +5329,49 @@ CONTRACT_TYPES = {
         "name": "Resource Extraction",
         "description": "Mine and deliver specific raw resources",
         "requirements": {"skill": "mining_operations", "min_level": 1},
-        "reward_range": (10000, 50000),
+        "reward_range": (1000, 5000),  # Reduced 90% from (10000, 50000)
         "time_limit": 3600
     },
     "refining_contract": {
         "name": "Resource Refining",
         "description": "Refine raw materials into processed resources",
         "requirements": {"skill": "refining", "min_level": 1},
-        "reward_range": (15000, 60000),
+        "reward_range": (1500, 6000),  # Reduced 90% from (15000, 60000)
         "time_limit": 2400
     },
     "manufacturing_contract": {
         "name": "Component Manufacturing",
         "description": "Build specified ship modules",
         "requirements": {"skill": "module_manufacturing", "min_level": 2},
-        "reward_range": (25000, 100000),
+        "reward_range": (2500, 10000),  # Reduced 90% from (25000, 100000)
         "time_limit": 3600
     },
     "combat_patrol": {
         "name": "Combat Patrol",
         "description": "Eliminate hostile targets in a sector",
         "requirements": {"skill": "weapons_mastery", "min_level": 2},
-        "reward_range": (25000, 100000),
+        "reward_range": (2500, 10000),  # Reduced 90% from (25000, 100000)
         "time_limit": 1800
     },
     "cargo_transport": {
         "name": "Cargo Transport",
         "description": "Deliver goods between locations",
         "requirements": {"vessel_cargo": 500},
-        "reward_range": (15000, 75000),
+        "reward_range": (1500, 7500),  # Reduced 90% from (15000, 75000)
         "time_limit": 2400
     },
     "reconnaissance": {
         "name": "Reconnaissance Mission",
         "description": "Scout and scan designated areas",
         "requirements": {"skill": "scanning", "min_level": 1},
-        "reward_range": (20000, 60000),
+        "reward_range": (2000, 6000),  # Reduced 90% from (20000, 60000) - was most overpaid
         "time_limit": 1800
     },
     "research_data": {
         "name": "Research Data Collection",
         "description": "Gather scientific data from anomalies",
         "requirements": {"skill": "scanning", "min_level": 3},
-        "reward_range": (40000, 150000),
+        "reward_range": (4000, 15000),  # Reduced 90% from (40000, 150000)
         "time_limit": 4800
     }
 }
