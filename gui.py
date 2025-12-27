@@ -14,43 +14,54 @@ from save_system import save_exists
 from volume_system import can_add_item
 from icon_manager import get_icon_manager
 from symbols import get_symbol
+from ui_widgets import RoundedFrame, BeveledButton, RoundedPanel, ProgressBar
 
 # Color Scheme (Modern Sci-Fi theme)
 COLORS = {
-    # Background colors
-    'bg_dark': '#0a0e17',           # Deep space black
-    'bg_medium': '#12182b',         # Dark blue-grey
-    'bg_light': '#1a2332',          # Lighter panel background
-    'sidebar': '#0d1117',           # Sidebar background
+    # Background colors - Warm dark tones
+    'bg_dark': '#1a0f00',           # Deep space brown-black
+    'bg_medium': '#2b1a0a',         # Dark amber-grey
+    'bg_light': '#3d2614',          # Lighter panel background
+    'sidebar': '#1f1200',           # Sidebar background
 
-    # Accent colors (Cyan/Blue sci-fi theme)
-    'accent': '#00d9ff',            # Bright cyan
-    'accent_dim': '#0099cc',        # Dimmed cyan
-    'accent_hover': '#00ffff',      # Bright cyan glow
-    'secondary': '#7b2cbf',         # Purple accent
+    # Accent colors - Orange/Amber theme
+    'accent': '#ff9933',            # Bright amber
+    'accent_dim': '#cc6600',        # Dimmed orange
+    'accent_hover': '#ffb366',      # Bright amber glow
+    'secondary': '#bf5f00',         # Deep orange accent
 
     # Text colors
-    'text': '#e6edf3',              # Bright white text
-    'text_dim': '#8b949e',          # Dimmed grey text
-    'text_accent': '#00d9ff',       # Cyan text
+    'text': '#fff5e6',              # Cream white text
+    'text_dim': '#b38e5d',          # Dimmed tan text
+    'text_accent': '#ff9933',       # Amber text
 
     # Status colors
-    'success': '#00ff88',           # Bright green
-    'danger': '#ff3366',            # Bright red
-    'warning': '#ffaa00',           # Bright orange
-    'info': '#00d9ff',              # Bright cyan
+    'success': '#66cc33',           # Green (contrast)
+    'danger': '#ff3333',            # Red (contrast)
+    'warning': '#ffaa00',           # Orange-yellow
+    'info': '#ff9933',              # Amber
 
     # UI elements
-    'header': '#0d1117',            # Top bar background
-    'border': '#30363d',            # Panel borders
-    'border_glow': '#00d9ff',       # Glowing borders
-    'button_bg': '#1a2332',         # Button background
-    'button_hover': '#243447',      # Button hover
-    'button_active': '#00d9ff',     # Active button
+    'header': '#1f1200',            # Top bar background
+    'border': '#4d3319',            # Panel borders
+    'border_glow': '#ff9933',       # Glowing borders
+    'button_bg': '#cc6600',         # Button background
+    'button_hover': '#ff8533',      # Button hover
+    'button_active': '#ffb366',     # Active button
+
+    # 3D Button effects
+    'button_highlight': '#ffc266',  # Top-left bevel edge
+    'button_shadow': '#663300',     # Bottom-right bevel edge
+    'button_pressed_highlight': '#663300',  # Inverted when pressed
+    'button_pressed_shadow': '#ffc266',     # Inverted when pressed
+
+    # Panel effects
+    'panel_highlight': '#5c3d26',   # Panel top edge
+    'panel_shadow': '#2b1a0a',      # Panel bottom edge
 
     # Special effects
     'shadow': '#000000',
-    'glow': '#00d9ff40',            # Semi-transparent cyan glow
+    'glow': '#ff993340',            # Semi-transparent amber glow
 }
 
 # Universe map configuration
@@ -626,7 +637,7 @@ class VoidDominionGUI:
             self.highlight_nav_button(self.current_nav)
 
     def create_nav_button(self, parent, text, command, view_id):
-        """Create a sidebar navigation button"""
+        """Create sidebar navigation button with 3D effect"""
         def on_click():
             # Update current view
             if view_id and view_id != "save":
@@ -635,35 +646,16 @@ class VoidDominionGUI:
             if command:
                 command()
 
-        btn = tk.Button(
+        btn = BeveledButton(
             parent,
             text=text,
-            font=('Consolas', 10, 'bold'),
-            fg=COLORS['text_dim'],
-            bg=COLORS['button_bg'],
-            activebackground=COLORS['button_hover'],
-            activeforeground=COLORS['text'],
-            bd=0,
-            highlightthickness=0,
-            relief=tk.FLAT,
-            cursor='hand2',
             command=on_click,
-            anchor='w',
-            padx=15,
-            pady=8
+            width=200,
+            height=44,
+            corner_radius=10,
+            style='normal',
+            font=('Consolas', 10, 'bold')
         )
-
-        # Hover effects
-        def on_enter(e):
-            if view_id != self.current_nav:
-                btn.config(bg=COLORS['button_hover'], fg=COLORS['text'])
-
-        def on_leave(e):
-            if view_id != self.current_nav:
-                btn.config(bg=COLORS['button_bg'], fg=COLORS['text_dim'])
-
-        btn.bind('<Enter>', on_enter)
-        btn.bind('<Leave>', on_leave)
 
         return btn
 
@@ -671,9 +663,9 @@ class VoidDominionGUI:
         """Highlight the active navigation button"""
         for vid, btn in self.nav_buttons.items():
             if vid == view_id:
-                btn.config(bg=COLORS['button_active'], fg=COLORS['bg_dark'])
+                btn.configure_style('accent')
             else:
-                btn.config(bg=COLORS['button_bg'], fg=COLORS['text_dim'])
+                btn.configure_style('normal')
 
     def create_content_area(self, parent):
         """Create main content area"""
@@ -687,88 +679,35 @@ class VoidDominionGUI:
             widget.destroy()
 
     def create_button(self, parent, text, command, width=15, style='normal'):
-        """Create styled sci-fi button"""
-        colors = {
-            'normal': (COLORS['bg_light'], COLORS['button_hover'], COLORS['text']),
-            'success': (COLORS['success'], '#00ff99', COLORS['bg_dark']),
-            'danger': (COLORS['danger'], '#ff4477', COLORS['text']),
-            'warning': (COLORS['warning'], '#ffbb00', COLORS['bg_dark']),
-            'accent': (COLORS['accent'], COLORS['accent_hover'], COLORS['bg_dark'])
-        }
+        """Create 3D beveled button with rounded corners"""
+        # Convert character width to pixel width (approximate)
+        pixel_width = width * 10
 
-        bg, hover, fg = colors.get(style, colors['normal'])
-
-        btn = tk.Button(
+        btn = BeveledButton(
             parent,
             text=text,
             command=command,
-            bg=bg,
-            fg=fg,
-            font=('Consolas', 9, 'bold'),
-            relief=tk.FLAT,
-            cursor='hand2',
-            width=width,
-            padx=12,
-            pady=6,
-            bd=0,
-            highlightthickness=1,
-            highlightbackground=COLORS['border']
+            width=pixel_width,
+            height=40,
+            corner_radius=12,
+            style=style,
+            font=('Consolas', 9, 'bold')
         )
-
-        # Hover effects
-        btn.bind('<Enter>', lambda e: btn.configure(bg=hover, highlightbackground=COLORS['border_glow']))
-        btn.bind('<Leave>', lambda e: btn.configure(bg=bg, highlightbackground=COLORS['border']))
 
         return btn
 
     def create_panel(self, parent, title=None):
-        """Create a styled panel with optional title"""
-        # Panel container with border
-        panel = tk.Frame(
+        """Create rounded panel with optional title bar"""
+        panel = RoundedPanel(
             parent,
-            bg=COLORS['bg_light'],
-            highlightthickness=1,
-            highlightbackground=COLORS['border']
+            title=title,
+            corner_radius=14,
+            show_title_bar=(title is not None),
+            bg=COLORS['bg_light']
         )
 
-        if title:
-            # Title bar
-            title_bar = tk.Frame(panel, bg=COLORS['bg_medium'], height=35)
-            title_bar.pack(fill=tk.X)
-            title_bar.pack_propagate(False)
-
-            # Title with icon
-            title_container = tk.Frame(title_bar, bg=COLORS['bg_medium'])
-            title_container.pack(side=tk.LEFT, padx=15, pady=8)
-
-            tk.Label(
-                title_container,
-                text="▸",
-                font=('Arial', 10),
-                fg=COLORS['accent'],
-                bg=COLORS['bg_medium']
-            ).pack(side=tk.LEFT, padx=(0, 8))
-
-            tk.Label(
-                title_container,
-                text=title.upper(),
-                font=('Consolas', 11, 'bold'),
-                fg=COLORS['text'],
-                bg=COLORS['bg_medium']
-            ).pack(side=tk.LEFT)
-
-            # Separator line
-            tk.Frame(panel, bg=COLORS['border_glow'], height=1).pack(fill=tk.X)
-
-            # Content area
-            content = tk.Frame(panel, bg=COLORS['bg_light'])
-            content.pack(fill=tk.BOTH, expand=True, padx=15, pady=15)
-            return panel, content
-        else:
-            # No title, return panel itself as content area
-            content = tk.Frame(panel, bg=COLORS['bg_light'])
-            content.pack(fill=tk.BOTH, expand=True, padx=15, pady=15)
-            return panel, content
+        content = panel.get_content_frame()
+        return panel, content
 
     def create_scrollable_frame(self, parent, bg_color=None):
         """
@@ -1234,8 +1173,7 @@ class VoidDominionGUI:
             width=25,
             style='success'
         )
-        scan_btn.pack(side=tk.LEFT, padx=10)
-        scan_btn.config(font=('Arial', 14, 'bold'), pady=20)
+        scan_btn.pack(side=tk.LEFT, padx=10, pady=10)
 
         mine_btn = self.create_button(
             row1,
@@ -1244,8 +1182,7 @@ class VoidDominionGUI:
             width=25,
             style='warning'
         )
-        mine_btn.pack(side=tk.LEFT, padx=10)
-        mine_btn.config(font=('Arial', 14, 'bold'), pady=20)
+        mine_btn.pack(side=tk.LEFT, padx=10, pady=10)
 
         # Row 2
         row2 = tk.Frame(button_container, bg=COLORS['bg_medium'])
@@ -1258,8 +1195,7 @@ class VoidDominionGUI:
             width=25,
             style='normal'
         )
-        anomaly_btn.pack(side=tk.LEFT, padx=10)
-        anomaly_btn.config(font=('Arial', 14, 'bold'), pady=20)
+        anomaly_btn.pack(side=tk.LEFT, padx=10, pady=10)
 
         deliver_btn = self.create_button(
             row2,
@@ -1268,8 +1204,7 @@ class VoidDominionGUI:
             width=25,
             style='success'
         )
-        deliver_btn.pack(side=tk.LEFT, padx=10)
-        deliver_btn.config(font=('Arial', 14, 'bold'), pady=20)
+        deliver_btn.pack(side=tk.LEFT, padx=10, pady=10)
 
         # Instructions
         tk.Label(
@@ -5956,15 +5891,6 @@ class VoidDominionGUI:
         button_frame = tk.Frame(right_frame, bg=COLORS['bg_dark'])
         button_frame.pack(pady=15)
         
-        cancel_btn = self.create_button(
-            button_frame,
-            "Cancel Travel",
-            lambda: None,  # Will be updated
-            width=15,
-            style='danger'
-        )
-        cancel_btn.pack()
-        
         # Animation state
         animation_state = {
             'start_time': time.time(),
@@ -5972,13 +5898,20 @@ class VoidDominionGUI:
             'cancelled': False,
             'ship_animation_frame': 0
         }
-        
+
         def cancel_travel():
             animation_state['cancelled'] = True
             overlay.destroy()
             messagebox.showinfo("Travel Cancelled", "Travel was cancelled. You remain at your current location.")
-        
-        cancel_btn.config(command=cancel_travel)
+
+        cancel_btn = self.create_button(
+            button_frame,
+            "Cancel Travel",
+            cancel_travel,
+            width=15,
+            style='danger'
+        )
+        cancel_btn.pack()
         
         def update_animation():
             if animation_state['cancelled']:
