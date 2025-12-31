@@ -18,50 +18,50 @@ from ui_widgets import RoundedFrame, BeveledButton, RoundedPanel, ProgressBar
 
 # Color Scheme (Modern Sci-Fi theme)
 COLORS = {
-    # Background colors - Warm dark tones
-    'bg_dark': '#1a0f00',           # Deep space brown-black
-    'bg_medium': '#2b1a0a',         # Dark amber-grey
-    'bg_light': '#3d2614',          # Lighter panel background
-    'sidebar': '#1f1200',           # Sidebar background
+    # Background colors
+    'bg_dark': '#0a0e17',           # Deep space black
+    'bg_medium': '#12182b',         # Dark blue-grey
+    'bg_light': '#1a2332',          # Lighter panel background
+    'sidebar': '#0d1117',           # Sidebar background
 
-    # Accent colors - Orange/Amber theme
-    'accent': '#ff9933',            # Bright amber
-    'accent_dim': '#cc6600',        # Dimmed orange
-    'accent_hover': '#ffb366',      # Bright amber glow
-    'secondary': '#bf5f00',         # Deep orange accent
+    # Accent colors (Cyan/Blue sci-fi theme)
+    'accent': '#00d9ff',            # Bright cyan
+    'accent_dim': '#0099cc',        # Dimmed cyan
+    'accent_hover': '#00ffff',      # Bright cyan glow
+    'secondary': '#7b2cbf',         # Purple accent
 
     # Text colors
-    'text': '#fff5e6',              # Cream white text
-    'text_dim': '#b38e5d',          # Dimmed tan text
-    'text_accent': '#ff9933',       # Amber text
+    'text': '#e6edf3',              # Bright white text
+    'text_dim': '#8b949e',          # Dimmed grey text
+    'text_accent': '#00d9ff',       # Cyan text
 
     # Status colors
-    'success': '#66cc33',           # Green (contrast)
-    'danger': '#ff3333',            # Red (contrast)
-    'warning': '#ffaa00',           # Orange-yellow
-    'info': '#ff9933',              # Amber
+    'success': '#00ff88',           # Bright green
+    'danger': '#ff3366',            # Bright red
+    'warning': '#ffaa00',           # Bright orange
+    'info': '#00d9ff',              # Bright cyan
 
     # UI elements
-    'header': '#1f1200',            # Top bar background
-    'border': '#4d3319',            # Panel borders
-    'border_glow': '#ff9933',       # Glowing borders
-    'button_bg': '#cc6600',         # Button background
-    'button_hover': '#ff8533',      # Button hover
-    'button_active': '#ffb366',     # Active button
+    'header': '#0d1117',            # Top bar background
+    'border': '#30363d',            # Panel borders
+    'border_glow': '#00d9ff',       # Glowing borders
+    'button_bg': '#1a2332',         # Button background
+    'button_hover': '#243447',      # Button hover
+    'button_active': '#00d9ff',     # Active button
 
     # 3D Button effects
-    'button_highlight': '#ffc266',  # Top-left bevel edge
-    'button_shadow': '#663300',     # Bottom-right bevel edge
-    'button_pressed_highlight': '#663300',  # Inverted when pressed
-    'button_pressed_shadow': '#ffc266',     # Inverted when pressed
+    'button_highlight': '#00ffff',  # Top-left bevel edge (bright cyan)
+    'button_shadow': '#001f33',     # Bottom-right bevel edge (dark blue)
+    'button_pressed_highlight': '#001f33',  # Inverted when pressed
+    'button_pressed_shadow': '#00ffff',     # Inverted when pressed
 
     # Panel effects
-    'panel_highlight': '#5c3d26',   # Panel top edge
-    'panel_shadow': '#2b1a0a',      # Panel bottom edge
+    'panel_highlight': '#2a3f5f',   # Panel top edge
+    'panel_shadow': '#0a0e17',      # Panel bottom edge
 
     # Special effects
     'shadow': '#000000',
-    'glow': '#ff993340',            # Semi-transparent amber glow
+    'glow': '#00d9ff40',            # Semi-transparent cyan glow
 }
 
 # Universe map configuration
