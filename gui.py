@@ -6125,8 +6125,8 @@ class VoidDominionGUI:
             else:
                 # Only show normal mining results if no encounter
                 messagebox.showinfo("Mining", message)
-                # Refresh status view to show new cargo volume
-                self.show_status_view()
+                # Refresh mining view to show updated stats
+                self.show_mining_view()
         else:
             messagebox.showerror("Mining Failed", message)
 
