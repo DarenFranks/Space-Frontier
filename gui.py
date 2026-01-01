@@ -525,6 +525,8 @@ class VoidDominionGUI:
         all_nav_buttons = [
             ("◈ STATUS", "status", self.show_status_view, None),  # Always available
             ("◈ TRAVEL", "travel", self.show_travel_view, None),  # Always available
+            ("◈ MINING", "mining", self.show_mining_view, None),  # Always available
+            ("◈ SCANNING", "scanning", self.show_scanning_view, None),  # Always available
             ("◈ MARKET", "market", self.show_market_view, ["market", "black_market"]),
             ("◈ CONTRACTS", "contracts", self.show_contracts_view, ["contracts"]),
             ("", None, None, None),  # Spacer
@@ -1154,62 +1156,27 @@ class VoidDominionGUI:
         self.map_pan_offset_x = 0.0
         self.map_pan_offset_y = 0.0
 
-        # PRIMARY ACTION BUTTONS - Top and Center (Most Prominent)
+        # PRIMARY ACTION BUTTON - Deliver Cargo
         action_panel, action_content = self.create_panel(self.content_frame, "⚡ COMMAND CENTER - Actions")
         action_panel.pack(fill=tk.X, pady=(0, 20), padx=20)
 
-        # Large, prominent buttons in a 2x2 grid
+        # Deliver cargo button
         button_container = tk.Frame(action_content, bg=COLORS['bg_medium'])
         button_container.pack(pady=20, padx=20)
 
-        # Row 1
-        row1 = tk.Frame(button_container, bg=COLORS['bg_medium'])
-        row1.pack(pady=5)
-
-        scan_btn = self.create_button(
-            row1,
-            "🔍 SCAN AREA",
-            self.scan_area,
-            width=25,
-            style='success'
-        )
-        scan_btn.pack(side=tk.LEFT, padx=10, pady=10)
-
-        mine_btn = self.create_button(
-            row1,
-            "⛏️ MINE RESOURCES",
-            self.mine_resources,
-            width=25,
-            style='warning'
-        )
-        mine_btn.pack(side=tk.LEFT, padx=10, pady=10)
-
-        # Row 2
-        row2 = tk.Frame(button_container, bg=COLORS['bg_medium'])
-        row2.pack(pady=5)
-
-        anomaly_btn = self.create_button(
-            row2,
-            "🌟 SCAN ANOMALY",
-            self.scan_anomaly,
-            width=25,
-            style='normal'
-        )
-        anomaly_btn.pack(side=tk.LEFT, padx=10, pady=10)
-
         deliver_btn = self.create_button(
-            row2,
+            button_container,
             "📦 DELIVER CARGO",
             self.deliver_cargo,
             width=25,
             style='success'
         )
-        deliver_btn.pack(side=tk.LEFT, padx=10, pady=10)
+        deliver_btn.pack(padx=10, pady=10)
 
         # Instructions
         tk.Label(
             action_content,
-            text="Select an action above to begin your operation",
+            text="Deliver cargo for active transport contracts",
             font=('Arial', 11, 'italic'),
             fg=COLORS['text_accent'],
             bg=COLORS['bg_medium']
@@ -1558,6 +1525,145 @@ class VoidDominionGUI:
                 fg=COLORS['text_dim'],
                 bg=COLORS['bg_medium']
             ).pack(pady=20)
+
+    def show_mining_view(self):
+        """Show mining operations view"""
+        self.current_view = "mining"
+        self.clear_content()
+
+        # Title panel
+        title_panel, title_content = self.create_panel(self.content_frame, "⛏️ MINING OPERATIONS")
+        title_panel.pack(fill=tk.X, pady=(0, 20), padx=20)
+
+        tk.Label(
+            title_content,
+            text="Extract valuable resources from asteroid fields and mineral deposits",
+            font=('Arial', 11, 'italic'),
+            fg=COLORS['text_dim'],
+            bg=COLORS['bg_medium']
+        ).pack(pady=10)
+
+        # Mining info panel
+        info_panel, info_content = self.create_panel(self.content_frame, "📊 Mining Equipment Status")
+        info_panel.pack(fill=tk.X, pady=(0, 20), padx=20)
+
+        # Get mining capabilities
+        mining_yield = self.engine.vessel.get_mining_yield()
+        mining_speed = self.engine.vessel.get_mining_speed()
+
+        info_text = f"Mining Yield Bonus: {mining_yield*100:.0f}%\n"
+        info_text += f"Mining Speed Bonus: {mining_speed*100:.0f}%\n"
+        info_text += f"Current Location: {LOCATIONS[self.engine.player.location]['name']}"
+
+        tk.Label(
+            info_content,
+            text=info_text,
+            font=('Arial', 11),
+            fg=COLORS['text'],
+            bg=COLORS['bg_medium'],
+            justify=tk.LEFT
+        ).pack(pady=10, padx=20)
+
+        # Mining action panel
+        action_panel, action_content = self.create_panel(self.content_frame, "⚡ Mining Actions")
+        action_panel.pack(fill=tk.BOTH, expand=True, pady=(0, 20), padx=20)
+
+        # Center the button
+        button_frame = tk.Frame(action_content, bg=COLORS['bg_medium'])
+        button_frame.pack(expand=True)
+
+        mine_btn = self.create_button(
+            button_frame,
+            "⛏️ MINE RESOURCES",
+            self.mine_resources,
+            width=30,
+            style='warning'
+        )
+        mine_btn.pack(pady=50)
+
+        # Help text
+        tk.Label(
+            action_content,
+            text="Click the button above to mine resources at your current location.\nMining equipment efficiency and bonuses affect your yield.",
+            font=('Arial', 10, 'italic'),
+            fg=COLORS['text_dim'],
+            bg=COLORS['bg_medium'],
+            justify=tk.CENTER
+        ).pack(pady=(0, 20))
+
+    def show_scanning_view(self):
+        """Show scanning operations view"""
+        self.current_view = "scanning"
+        self.clear_content()
+
+        # Title panel
+        title_panel, title_content = self.create_panel(self.content_frame, "🔍 SCANNING OPERATIONS")
+        title_panel.pack(fill=tk.X, pady=(0, 20), padx=20)
+
+        tk.Label(
+            title_content,
+            text="Scan your surroundings for resources, anomalies, and hidden discoveries",
+            font=('Arial', 11, 'italic'),
+            fg=COLORS['text_dim'],
+            bg=COLORS['bg_medium']
+        ).pack(pady=10)
+
+        # Scanner info panel
+        info_panel, info_content = self.create_panel(self.content_frame, "📡 Scanner Equipment Status")
+        info_panel.pack(fill=tk.X, pady=(0, 20), padx=20)
+
+        # Get scanning capabilities
+        scan_range = self.engine.vessel.get_scan_range()
+        detection = self.engine.vessel.get_detection_boost()
+
+        info_text = f"Scan Range: {scan_range:.0f} km\n"
+        info_text += f"Detection Bonus: +{detection*100:.0f}%\n"
+        info_text += f"Current Location: {LOCATIONS[self.engine.player.location]['name']}"
+
+        tk.Label(
+            info_content,
+            text=info_text,
+            font=('Arial', 11),
+            fg=COLORS['text'],
+            bg=COLORS['bg_medium'],
+            justify=tk.LEFT
+        ).pack(pady=10, padx=20)
+
+        # Scanning actions panel
+        action_panel, action_content = self.create_panel(self.content_frame, "⚡ Scanning Actions")
+        action_panel.pack(fill=tk.BOTH, expand=True, pady=(0, 20), padx=20)
+
+        # Center the buttons
+        button_frame = tk.Frame(action_content, bg=COLORS['bg_medium'])
+        button_frame.pack(expand=True)
+
+        scan_area_btn = self.create_button(
+            button_frame,
+            "🔍 SCAN AREA",
+            self.scan_area,
+            width=30,
+            style='success'
+        )
+        scan_area_btn.pack(pady=20)
+
+        anomaly_btn = self.create_button(
+            button_frame,
+            "🌟 SCAN ANOMALY",
+            self.scan_anomaly,
+            width=30,
+            style='normal'
+        )
+        anomaly_btn.pack(pady=20)
+
+        # Help text
+        tk.Label(
+            action_content,
+            text="Scan Area: Detect nearby resources and points of interest\nScan Anomaly: Investigate anomalies for research data and discoveries",
+            font=('Arial', 10, 'italic'),
+            fg=COLORS['text_dim'],
+            bg=COLORS['bg_medium'],
+            justify=tk.CENTER
+        ).pack(pady=(0, 20))
 
     def show_travel_view(self):
         """Show travel/map view"""
