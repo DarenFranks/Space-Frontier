@@ -62,6 +62,13 @@ COLORS = {
     # Special effects
     'shadow': '#000000',
     'glow': '#00d9ff40',            # Semi-transparent cyan glow
+
+    # Faction colors
+    'faction_meridian': '#4a90e2',      # Blue - Democratic traders
+    'faction_technocrat': '#9b59b6',    # Purple - Scientific cabal
+    'faction_cipher': '#e74c3c',        # Red - Militaristic empire
+    'faction_corsairs': '#e67e22',      # Orange - Pirates
+    'faction_neutral': '#95a5a6',       # Grey - Neutral zones
 }
 
 # Universe map configuration
@@ -1004,19 +1011,28 @@ class VoidDominionGUI:
 
             # Determine if location should be visible
             if is_visited:
-                # Visited location - full color
+                # Get faction color
+                faction = loc_data.get("faction")
+                if faction == "meridian_collective":
+                    base_color = COLORS['faction_meridian']
+                elif faction == "technocrat_union":
+                    base_color = COLORS['faction_technocrat']
+                elif faction == "cipher_dominion":
+                    base_color = COLORS['faction_cipher']
+                elif faction == "void_corsairs":
+                    base_color = COLORS['faction_corsairs']
+                else:
+                    base_color = COLORS['faction_neutral']
+
+                # Visited location - faction colored
                 if is_current:
                     fill_color = COLORS['success']
                     outline_color = COLORS['accent']
                     radius = 8
-                elif loc_data.get("type") == "station":
-                    fill_color = COLORS['accent']
-                    outline_color = COLORS['text']
-                    radius = 6
                 else:
-                    fill_color = COLORS['info']
-                    outline_color = COLORS['text_dim']
-                    radius = 5
+                    fill_color = base_color
+                    outline_color = COLORS['text']
+                    radius = 6 if loc_data.get("type") == "station" else 5
 
                 # Draw circle
                 self.map_canvas.create_oval(
@@ -1066,52 +1082,70 @@ class VoidDominionGUI:
 
         # Add legend (FIXED position - bottom-left, not transformed)
         legend_x = 10
-        legend_y = MAP_CANVAS_HEIGHT - 60
+        legend_y = MAP_CANVAS_HEIGHT - 100
 
         self.map_canvas.create_text(
             legend_x, legend_y,
-            text="Legend:",
+            text="Factions:",
             fill=COLORS['text'],
             font=('Arial', 10, 'bold'),
             anchor='w'
         )
 
-        # Current location
-        self.map_canvas.create_oval(
-            legend_x + 5, legend_y + 15, legend_x + 13, legend_y + 23,
-            fill=COLORS['success'], outline=COLORS['accent'], width=2
-        )
-        self.map_canvas.create_text(
-            legend_x + 20, legend_y + 19,
-            text="Current",
-            fill=COLORS['text'],
-            font=('Arial', 9),
-            anchor='w'
-        )
+        # Faction legend - Row 1
+        factions_row1 = [
+            (COLORS['faction_meridian'], "Meridian", legend_x + 5),
+            (COLORS['faction_technocrat'], "Technocrat", legend_x + 110),
+            (COLORS['faction_cipher'], "Cipher", legend_x + 220),
+        ]
 
-        # Visited
-        self.map_canvas.create_oval(
-            legend_x + 75, legend_y + 15, legend_x + 81, legend_y + 21,
-            fill=COLORS['accent'], outline=COLORS['text'], width=2
-        )
-        self.map_canvas.create_text(
-            legend_x + 87, legend_y + 19,
-            text="Visited",
-            fill=COLORS['text'],
-            font=('Arial', 9),
-            anchor='w'
-        )
+        y_pos = legend_y + 18
+        for color, name, x_start in factions_row1:
+            self.map_canvas.create_oval(
+                x_start, y_pos - 4, x_start + 8, y_pos + 4,
+                fill=color, outline=COLORS['text'], width=1
+            )
+            self.map_canvas.create_text(
+                x_start + 13, y_pos,
+                text=name,
+                fill=COLORS['text'],
+                font=('Arial', 8),
+                anchor='w'
+            )
+
+        # Faction legend - Row 2
+        factions_row2 = [
+            (COLORS['faction_corsairs'], "Corsairs", legend_x + 5),
+            (COLORS['faction_neutral'], "Neutral", legend_x + 110),
+            (COLORS['success'], "Current", legend_x + 220),
+        ]
+
+        y_pos = legend_y + 35
+        for color, name, x_start in factions_row2:
+            outline = COLORS['accent'] if name == "Current" else COLORS['text']
+            width = 2 if name == "Current" else 1
+            self.map_canvas.create_oval(
+                x_start, y_pos - 4, x_start + 8, y_pos + 4,
+                fill=color, outline=outline, width=width
+            )
+            self.map_canvas.create_text(
+                x_start + 13, y_pos,
+                text=name,
+                fill=COLORS['text'],
+                font=('Arial', 8),
+                anchor='w'
+            )
 
         # Unexplored
         self.map_canvas.create_oval(
-            legend_x + 145, legend_y + 16, legend_x + 149, legend_y + 20,
+            legend_x + 330, y_pos - 4, legend_x + 338, y_pos + 4,
             fill='#1a1a1a', outline='#3a3a3a', width=1, dash=(2, 2)
         )
         self.map_canvas.create_text(
-            legend_x + 157, legend_y + 19,
+            legend_x + 343, y_pos,
             text="Unknown",
             fill=COLORS['text'],
-            font=('Arial', 9),
+            font=('Arial', 8),
             anchor='w'
         )
 
