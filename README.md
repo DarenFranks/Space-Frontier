@@ -2,7 +2,7 @@
 
 **A vast sci-fi exploration and trading game with strategic combat, deep crafting systems, and factional warfare**
 
-**Version**: 2.0 | **Status**: Active Development | **Platform**: Windows, macOS, Linux
+**Version**: 0.1 | **Status**: Alpha Development | **Platform**: Windows, macOS, Linux
 
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
