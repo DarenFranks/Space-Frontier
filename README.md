@@ -1,4 +1,4 @@
-# 🚀 Space Frontier
+# 🚀 Void Dominion
 
 **A vast sci-fi exploration and trading game with strategic combat, deep crafting systems, and factional warfare**
 
@@ -12,7 +12,7 @@
 
 ## 🌌 Overview
 
-**Space Frontier** is a comprehensive space trading and combat simulator featuring a massive procedurally-enhanced universe with **56 locations** across **5 faction territories**. Build your trading empire, master complex manufacturing chains, engage in tactical combat, and navigate the dangerous politics of factional warfare.
+**Void Dominion** is a comprehensive space trading and combat simulator featuring a massive procedurally-enhanced universe with **56 locations** across **5 faction territories**. Build your trading empire, master complex manufacturing chains, engage in tactical combat, and navigate the dangerous politics of factional warfare.
 
 ### Key Features At A Glance
 

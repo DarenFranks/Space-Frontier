@@ -1,7 +1,7 @@
-# Space Frontier - USB Drive Installation Guide
+# Void Dominion - USB Drive Installation Guide
 
 ## Overview
-This guide explains how to run Space Frontier directly from a USB drive on any computer with Python installed.
+This guide explains how to run Void Dominion directly from a USB drive on any computer with Python installed.
 
 ---
 
@@ -198,4 +198,4 @@ If you encounter issues:
 
 See `README.md` for full game documentation and controls.
 
-Enjoy Space Frontier on the go! 🚀
+Enjoy Void Dominion on the go! 🚀

@@ -1,4 +1,4 @@
-# Refining System Analysis - Space Frontier
+# Refining System Analysis - Void Dominion
 
 ## Overview
 The refining system allows players to convert raw ores into refined resources. Currently, it only sources materials from **ship cargo** and does not access **station storage**. This analysis covers the complete implementation and identifies the changes needed to support both sources.

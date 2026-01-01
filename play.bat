@@ -1,5 +1,5 @@
 @echo off
-REM Space Frontier Launcher for Windows
+REM Void Dominion Launcher for Windows
 REM Double-click this file to run the game
 
 echo ================================================

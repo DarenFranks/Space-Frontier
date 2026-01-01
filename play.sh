@@ -1,5 +1,5 @@
 #!/bin/bash
-# Space Frontier GUI Launcher Script
+# Void Dominion GUI Launcher Script
 # USB Drive Edition
 
 echo "================================================"

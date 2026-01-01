@@ -1,4 +1,4 @@
-# Space Frontier - New Pricing System
+# Void Dominion - New Pricing System
 
 ## Overview
 The item value system has been completely revamped to create a proper economic hierarchy where **ships are the highest cost**, followed by modules, components, and finally raw ore as the cheapest.

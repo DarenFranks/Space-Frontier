@@ -1,6 +1,6 @@
-# Release Guide for Space Frontier
+# Release Guide for Void Dominion
 
-This document explains how to create releases for Space Frontier.
+This document explains how to create releases for Void Dominion.
 
 ## 🎯 Quick Overview
 
@@ -75,7 +75,7 @@ chmod +x create_release.sh
 1. Go to: `https://github.com/DarenFranks/Space-Frontier/releases/new`
 2. Fill in:
    - **Tag**: v2.0.0 (create new tag)
-   - **Title**: Space Frontier 2.0.0
+   - **Title**: Void Dominion 2.0.0
    - **Description**: Release notes
 3. Attach the zip file
 4. Click "Publish release"

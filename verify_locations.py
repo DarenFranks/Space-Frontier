@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Verify that all locations in Space Frontier are reachable from the starting location.
+Verify that all locations in Void Dominion are reachable from the starting location.
 """
 
 from data import LOCATIONS

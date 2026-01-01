@@ -1,4 +1,4 @@
-# Space Frontier - Commodity Trading System
+# Void Dominion - Commodity Trading System
 
 ## Overview
 
