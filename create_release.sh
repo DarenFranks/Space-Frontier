@@ -1,8 +1,8 @@
 #!/bin/bash
 # Quick script to create a versioned release
 
-VERSION="2.0.0"
-RELEASE_NAME="Space-Frontier-v${VERSION}"
+VERSION="0.1.0"
+RELEASE_NAME="Void-Dominion-v${VERSION}"
 
 # Create release directory
 mkdir -p releases
@@ -23,7 +23,7 @@ cd ..
 echo "Release created: releases/${RELEASE_NAME}.zip"
 echo ""
 echo "Now create a GitHub release:"
-echo "1. Go to: https://github.com/DarenFranks/Space-Frontier/releases/new"
+echo "1. Go to: https://github.com/DarenFranks/VoidDominion/releases/new"
 echo "2. Tag: v${VERSION}"
 echo "3. Title: Void Dominion ${VERSION}"
 echo "4. Upload: releases/${RELEASE_NAME}.zip"

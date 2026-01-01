@@ -1,8 +1,8 @@
 @echo off
 REM Quick script to create a versioned release for Windows
 
-SET VERSION=2.0.0
-SET RELEASE_NAME=Space-Frontier-v%VERSION%
+SET VERSION=0.1.0
+SET RELEASE_NAME=Void-Dominion-v%VERSION%
 
 REM Create release directory
 if not exist releases mkdir releases
