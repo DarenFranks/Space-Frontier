@@ -1395,13 +1395,43 @@ class VoidDominionGUI:
 
                 # Delivery destination info
                 if contract.objectives.get("type") == "transport_cargo":
+                    from data import COMMODITIES
                     dest_id = contract.objectives.get("destination")
                     dest_name = LOCATIONS.get(dest_id, {}).get("name", dest_id)
+                    item_id = contract.objectives.get("resource_id")
+                    item_type = contract.objectives.get("item_type", "resource")
+                    quantity = contract.objectives.get("quantity", 0)
+
+                    # Get item name
+                    if item_type == "commodity":
+                        item_name = COMMODITIES.get(item_id, {}).get("name", item_id)
+                    else:
+                        item_name = RESOURCES.get(item_id, {}).get("name", item_id)
+
+                    # Source location name
+                    source_name = LOCATIONS.get(contract.location_id, {}).get("name", contract.location_id)
+
                     tk.Label(
                         info_frame,
                         text=f"🎯 Deliver to: {dest_name}",
-                        font=('Arial', 9),
+                        font=('Arial', 9, 'bold'),
                         fg=COLORS['accent'],
+                        bg=COLORS['bg_light']
+                    ).pack(anchor='w', pady=2)
+
+                    tk.Label(
+                        info_frame,
+                        text=f"📦 Cargo: {quantity}x {item_name}",
+                        font=('Arial', 9),
+                        fg=COLORS['text'],
+                        bg=COLORS['bg_light']
+                    ).pack(anchor='w', pady=2)
+
+                    tk.Label(
+                        info_frame,
+                        text=f"💾 Items stored at: {source_name} (check STORAGE tab)",
+                        font=('Arial', 9, 'italic'),
+                        fg=COLORS['warning'],
                         bg=COLORS['bg_light']
                     ).pack(anchor='w', pady=2)
 
@@ -5266,44 +5296,52 @@ class VoidDominionGUI:
         station_inv = self.engine.player.get_station_inventory(self.engine.player.location)
 
         if station_inv:
+            from data import COMMODITIES
             for item_id, quantity in sorted(station_inv.items()):
+                # Check if it's a resource or commodity
                 if item_id in RESOURCES:
-                    resource = RESOURCES[item_id]
+                    item_data = RESOURCES[item_id]
+                    item_type = 'resource'
+                elif item_id in COMMODITIES:
+                    item_data = COMMODITIES[item_id]
+                    item_type = 'commodity'
+                else:
+                    continue  # Skip unknown items
 
-                    item_frame = tk.Frame(station_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-                    item_frame.pack(fill=tk.X, pady=2, padx=5)
+                item_frame = tk.Frame(station_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
+                item_frame.pack(fill=tk.X, pady=2, padx=5)
 
-                    # Icon
-                    icon = self.icon_manager.get_icon('resource', item_id, size='small', rarity=resource.get('rarity'))
-                    if icon:
-                        icon_label = tk.Label(item_frame, image=icon, bg=COLORS['bg_light'])
-                        icon_label.image = icon
-                        icon_label.pack(side=tk.LEFT, padx=(10, 5), pady=5)
-                    else:
-                        symbol = get_symbol('resource', item_id)
-                        tk.Label(
-                            item_frame,
-                            text=symbol,
-                            font=('Arial', 12),
-                            fg=COLORS['accent'],
-                            bg=COLORS['bg_light']
-                        ).pack(side=tk.LEFT, padx=(10, 5), pady=5)
-
+                # Icon
+                icon = self.icon_manager.get_icon(item_type, item_id, size='small', rarity=item_data.get('rarity'))
+                if icon:
+                    icon_label = tk.Label(item_frame, image=icon, bg=COLORS['bg_light'])
+                    icon_label.image = icon
+                    icon_label.pack(side=tk.LEFT, padx=(10, 5), pady=5)
+                else:
+                    symbol = get_symbol(item_type, item_id)
                     tk.Label(
                         item_frame,
-                        text=f"{resource['name']}: {quantity}",
-                        font=('Arial', 10),
-                        fg=COLORS['text'],
+                        text=symbol,
+                        font=('Arial', 12),
+                        fg=COLORS['accent'],
                         bg=COLORS['bg_light']
-                    ).pack(side=tk.LEFT, padx=5, pady=5)
+                    ).pack(side=tk.LEFT, padx=(10, 5), pady=5)
 
-                    self.create_button(
-                        item_frame,
-                        "→ Ship",
-                        lambda i=item_id: self.transfer_to_ship_dialog(i),
-                        width=10,
-                        style='success'
-                    ).pack(side=tk.RIGHT, padx=5, pady=5)
+                tk.Label(
+                    item_frame,
+                    text=f"{item_data['name']}: {quantity}",
+                    font=('Arial', 10),
+                    fg=COLORS['text'],
+                    bg=COLORS['bg_light']
+                ).pack(side=tk.LEFT, padx=5, pady=5)
+
+                self.create_button(
+                    item_frame,
+                    "→ Ship",
+                    lambda i=item_id: self.transfer_to_ship_dialog(i),
+                    width=10,
+                    style='success'
+                ).pack(side=tk.RIGHT, padx=5, pady=5)
         else:
             tk.Label(
                 station_content,
