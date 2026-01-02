@@ -8,6 +8,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext, simpledialog
 import threading
 import time
+import cv2
+from PIL import Image, ImageTk
 from game_engine import GameEngine
 from data import LOCATIONS, RESOURCES, MODULES, SKILLS, FACTIONS, VESSEL_CLASSES, SHIP_COMPONENTS, RAW_RESOURCES, REFINING_YIELD_RANGES
 from save_system import save_exists
@@ -179,6 +181,12 @@ class VoidDominionGUI:
         self.map_pan_offset_y = 0.0    # Pan offset in world coordinates
         self.map_drag_start = None     # (x, y) mouse position when drag started
         self.map_canvas = None         # Reference to canvas for event binding
+
+        # Video player state
+        self.video_cap = None          # cv2.VideoCapture object
+        self.video_label = None        # Label to display video frames
+        self.video_playing = False     # Whether video is currently playing
+        self.video_path = "/home/darenf/Desktop/Claude_Projects/Space-Frontier/Straight_On_Warp_Travel_Video.mp4"
 
         # Configure styles
         self.setup_styles()
@@ -700,6 +708,7 @@ class VoidDominionGUI:
     def clear_content(self):
         """Clear content area"""
         self.map_canvas = None  # Clear canvas reference
+        self.stop_video_playback()  # Stop any playing video
         for widget in self.content_frame.winfo_children():
             widget.destroy()
 
@@ -1802,129 +1811,78 @@ class VoidDominionGUI:
         # Create line and ball map display
         self.draw_universe_map(map_content)
 
-        # RIGHT: Current Location & Connections
-        current_loc = LOCATIONS[self.engine.player.location]
-        
-        # DEBUG: Log what we're finding
-        print(f"[DEBUG] Player location: {self.engine.player.location}")
-        print(f"[DEBUG] Location name: {current_loc.get('name', 'UNKNOWN')}")
-        connections = current_loc.get('connections', [])
-        print(f"[DEBUG] Connections found: {len(connections)}")
-        print(f"[DEBUG] Connection IDs: {connections}")
+        # RIGHT: Video Player
+        video_panel, video_content = self.create_panel(right_frame, "🚀 Warp Travel")
+        video_panel.pack(fill=tk.BOTH, expand=True)
 
-        # Current location info
-        loc_panel, loc_content = self.create_panel(right_frame, "Current Location")
-        loc_panel.pack(fill=tk.X, pady=(0, 10))
+        # Video display label
+        self.video_label = tk.Label(video_content, bg=COLORS['bg_dark'])
+        self.video_label.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        info_frame = tk.Frame(loc_content, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=2)
-        info_frame.pack(fill=tk.X, pady=10)
+        # Start video playback
+        self.start_video_playback()
 
-        tk.Label(
-            info_frame,
-            text=current_loc['name'],
-            font=('Arial', 14, 'bold'),
-            fg=COLORS['accent'],
-            bg=COLORS['bg_light']
-        ).pack(pady=10)
+    def start_video_playback(self):
+        """Start playing the warp travel video"""
+        # Stop any existing video
+        self.stop_video_playback()
 
-        tk.Label(
-            info_frame,
-            text=current_loc['description'],
-            font=('Arial', 10),
-            fg=COLORS['text'],
-            bg=COLORS['bg_light'],
-            wraplength=400
-        ).pack(pady=5, padx=10)
+        # Open video file
+        self.video_cap = cv2.VideoCapture(self.video_path)
+        if not self.video_cap.isOpened():
+            print(f"Error: Could not open video file: {self.video_path}")
+            return
 
-        # Connected locations
-        conn_panel, conn_content = self.create_panel(right_frame, "Connected Locations")
-        conn_panel.pack(fill=tk.BOTH, expand=True)
+        self.video_playing = True
+        self.update_video_frame()
 
-        # Scrollable connections
-        canvas = tk.Canvas(conn_content, bg=COLORS['bg_medium'], highlightthickness=0)
-        scrollbar = tk.Scrollbar(conn_content, orient="vertical", command=canvas.yview)
-        scrollable_frame = tk.Frame(canvas, bg=COLORS['bg_medium'])
+    def stop_video_playback(self):
+        """Stop video playback and release resources"""
+        self.video_playing = False
+        if self.video_cap is not None:
+            self.video_cap.release()
+            self.video_cap = None
 
-        scrollable_frame.bind(
-            "<Configure>",
-            lambda e: canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), scrollable_frame.winfo_reqheight()))
-        )
+    def update_video_frame(self):
+        """Update video frame in the label"""
+        if not self.video_playing or self.video_cap is None:
+            return
 
-        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        canvas.configure(yscrollcommand=scrollbar.set)
-        self.bind_mousewheel(canvas, scrollable_frame)
+        ret, frame = self.video_cap.read()
 
-        for conn_id in current_loc.get('connections', []):
-            conn_data = LOCATIONS[conn_id]
+        if ret:
+            # Convert BGR to RGB
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            loc_frame = tk.Frame(scrollable_frame, bg=COLORS['bg_light'], relief=tk.RIDGE, bd=1)
-            loc_frame.pack(fill=tk.X, pady=5, padx=10)
+            # Resize frame to fit the label while maintaining aspect ratio
+            if self.video_label and self.video_label.winfo_exists():
+                label_width = self.video_label.winfo_width()
+                label_height = self.video_label.winfo_height()
 
-            # Location icon
-            icon_frame = tk.Frame(loc_frame, bg=COLORS['bg_light'])
-            icon_frame.pack(side=tk.LEFT, padx=(10, 5), pady=10)
+                if label_width > 1 and label_height > 1:  # Ensure label is rendered
+                    # Calculate scaling to fit
+                    frame_height, frame_width = frame_rgb.shape[:2]
+                    scale = min(label_width / frame_width, label_height / frame_height)
+                    new_width = int(frame_width * scale)
+                    new_height = int(frame_height * scale)
 
-            loc_type = conn_data.get('type', 'station')
-            icon = self.icon_manager.get_icon('location', loc_type, size='medium')
-            if icon:
-                icon_label = tk.Label(icon_frame, image=icon, bg=COLORS['bg_light'])
-                icon_label.image = icon
-                icon_label.pack()
-            else:
-                symbol = get_symbol('location', loc_type)
-                tk.Label(
-                    icon_frame,
-                    text=symbol,
-                    font=('Arial', 16),
-                    fg=COLORS['accent'],
-                    bg=COLORS['bg_light']
-                ).pack()
+                    # Resize frame
+                    frame_resized = cv2.resize(frame_rgb, (new_width, new_height))
 
-            # Location info
-            info = tk.Frame(loc_frame, bg=COLORS['bg_light'])
-            info.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=5, pady=10)
+                    # Convert to PIL Image then to PhotoImage
+                    img = Image.fromarray(frame_resized)
+                    imgtk = ImageTk.PhotoImage(image=img)
 
-            tk.Label(
-                info,
-                text=conn_data['name'],
-                font=('Arial', 11, 'bold'),
-                fg=COLORS['accent'],
-                bg=COLORS['bg_light']
-            ).pack(anchor='w')
+                    # Update label
+                    self.video_label.imgtk = imgtk  # Keep reference to prevent garbage collection
+                    self.video_label.configure(image=imgtk)
 
-            tk.Label(
-                info,
-                text=conn_data['description'],
-                font=('Arial', 9),
-                fg=COLORS['text'],
-                bg=COLORS['bg_light'],
-                wraplength=300
-            ).pack(anchor='w', pady=2)
-
-            danger = int(conn_data.get('danger_level', 0) * 100)
-            danger_color = COLORS['success'] if danger < 30 else COLORS['warning'] if danger < 70 else COLORS['danger']
-
-            tk.Label(
-                info,
-                text=f"Danger: {danger}%",
-                font=('Arial', 9),
-                fg=danger_color,
-                bg=COLORS['bg_light']
-            ).pack(anchor='w', pady=2)
-
-            # Travel button
-            btn_frame = tk.Frame(loc_frame, bg=COLORS['bg_light'])
-            btn_frame.pack(side=tk.RIGHT, padx=10, pady=10)
-
-            self.create_button(
-                btn_frame,
-                "Travel",
-                lambda loc=conn_id: self.travel_to(loc),
-                width=12
-            ).pack()
-
-        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        # scrollbar.pack(side=tk.RIGHT, fill=tk.Y)  # Hidden - mouse wheel still works
+            # Schedule next frame (30 FPS = ~33ms delay)
+            self.root.after(33, self.update_video_frame)
+        else:
+            # End of video - loop back to start
+            self.video_cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            self.root.after(33, self.update_video_frame)
 
     def show_market_view(self, category='all'):
         """Show market/trading view with category filtering"""
