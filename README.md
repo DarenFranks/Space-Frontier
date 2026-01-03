@@ -2,7 +2,7 @@
 
 **A vast sci-fi exploration and trading game with strategic combat, deep crafting systems, and factional warfare**
 
-**Version**: 0.1 | **Status**: Alpha Development | **Platform**: Windows, macOS, Linux
+**Version**: 0.1.8 | **Status**: Alpha Development | **Platform**: Windows, macOS, Linux
 
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -18,7 +18,7 @@
 
 - 🗺️ **56 Locations** spanning neutral zones to deadly pirate territories
 - 🏴 **Faction Loyalty System** with 7 reputation tiers
-- 🚀 **Distance-Based Travel** with real-time animated journeys
+- 🚀 **Cinematic Warp Travel** with full-motion video animation
 - ⚔️ **Tactical Turn-Based Combat** with advanced damage systems
 - 🏭 **Deep Manufacturing** - craft ships, modules, and components
 - 💎 **Faction-Specific Loot** - uncraftable legendary items
@@ -26,6 +26,7 @@
 - 🎯 **Contract System** - mining, combat, transport, and research missions
 - 🛰️ **Multi-Ship Management** - own and manage multiple vessels with berth system
 - ⚙️ **Module Fitting** - customize ships with weapons, defenses, and utilities
+- 🎨 **Modern GUI** - Sleek sci-fi interface with orange/amber spaceship theme
 
 ---
 
@@ -43,8 +44,9 @@
 **Travel System:**
 - Real distances between locations (80-800 light-seconds)
 - Travel time based on ship speed and distance
-- Beautiful animated travel overlay with progress tracking
-- Cancellable journeys before arrival
+- **Cinematic warp travel video** plays during journey
+- Full-screen overlay with universe map and warp animation
+- Automatic arrival when video completes
 - Encounter system (combat & traders) on arrival
 
 ### 🏴 Faction & Loyalty System
@@ -136,12 +138,13 @@
 - Connected locations clickable
 - Persistent legend always visible
 
-### Travel Animation
-- Fullscreen travel overlay
-- Animated ship moving between locations
-- Real-time progress bar and ETA countdown
-- Distance and danger information
-- Cancellable before arrival
+### Warp Travel Animation
+- **Full-motion video** playback during warp travel
+- Fullscreen travel overlay with split view
+- Left: Universe map showing route
+- Right: Cinematic warp travel video (9MB MP4)
+- Automatic arrival when video completes
+- Seamless integration with game flow
 
 ---
 
@@ -149,16 +152,35 @@
 
 ### Requirements
 - Python 3.7+
-- ~50 MB disk space
+- OpenCV (opencv-python) for video playback
+- ~60 MB disk space (includes 9MB warp video)
 - 1400x900 minimum resolution
 
-### Quick Start
+### Windows Installation
 
+**Easy Method (Recommended):**
+1. Download and extract the latest release
+2. Double-click `install.bat` (one-time setup)
+3. Double-click `play.bat` to launch the game
+
+**Manual Method:**
 ```bash
-git clone https://github.com/DarenFranks/Space-Frontier.git
-cd Space-Frontier
 pip install -r requirements.txt
 python gui.py
+```
+
+### Linux/macOS Installation
+
+```bash
+git clone https://github.com/DarenFranks/VoidDominion.git
+cd VoidDominion
+pip3 install -r requirements.txt
+python3 gui.py
+```
+
+**Note:** If you encounter issues installing opencv-python, you may need:
+```bash
+pip3 install --user --break-system-packages opencv-python
 ```
 
 
@@ -167,13 +189,16 @@ python gui.py
 ## 🎯 Getting Started
 
 ### First Steps
-1. Launch the game - Run `python gui.py`
-2. Create a character
-3. Start in Neutral Zone (Nexus Prime)
-4. Mine resources in Tranquil Belt
-5. Accept contracts to build reputation
-6. Upgrade your ship
-7. Explore faction territories
+1. **Launch the game**
+   - Windows: Double-click `play.bat`
+   - Linux/macOS: Run `python3 gui.py`
+2. **Create a character** - Click "New Game" and enter your commander name
+3. **Start in Neutral Zone** - Begin at Nexus Prime with 50,000 credits
+4. **Learn the interface** - Explore the left navigation menu
+5. **Mine resources** - Visit Mining tab to extract resources
+6. **Accept contracts** - Check Contracts tab for missions
+7. **Upgrade your ship** - Use Shipyard to purchase better vessels
+8. **Explore** - Travel to new locations via the Travel/Map page
 
 ### Early Game Strategy
 
@@ -211,9 +236,10 @@ python gui.py
 
 ### Performance
 - Startup Time: <2 seconds
-- Memory Usage: ~50-80 MB
-- CPU Usage: Low (turn-based)
+- Memory Usage: ~50-80 MB (+ video playback)
+- CPU Usage: Low (turn-based), moderate during video playback
 - Save File Size: ~50-200 KB
+- Video File: 9MB (Straight_On_Warp_Travel_Video.mp4)
 
 ### Save System
 - Auto-save on major actions
